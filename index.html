@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏆 Турнирная статистика — Live</title>
+    <title>🏆 Турнирная статистика</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
     :root {
         --bg-primary: #080a09;
         --bg-secondary: #161817;
@@ -23,13 +21,11 @@
         --negative: #ff5555;
         --neutral: #8be9fd;
     }
-
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
-
     body {
         font-family: 'Inter', sans-serif;
         background-color: var(--bg-primary);
@@ -37,7 +33,6 @@
         min-height: 100vh;
         overflow-x: hidden;
     }
-
     /* Header */
     .header {
         text-align: center;
@@ -46,7 +41,6 @@
         border-bottom: 1px solid var(--border);
         position: relative;
     }
-
     .header::after {
         content: '';
         position: absolute;
@@ -58,7 +52,6 @@
         background: var(--accent);
         border-radius: 2px;
     }
-
     .header h1 {
         font-size: 2.8rem;
         font-weight: 900;
@@ -66,14 +59,12 @@
         letter-spacing: -2px;
         text-transform: uppercase;
     }
-
     .header p {
         color: var(--text-secondary);
         margin-top: 8px;
         font-size: 0.95rem;
         font-weight: 400;
     }
-
     .last-update {
         color: var(--text-dim);
         font-size: 0.8rem;
@@ -83,7 +74,6 @@
         justify-content: center;
         gap: 6px;
     }
-
     .status-dot {
         width: 8px;
         height: 8px;
@@ -91,24 +81,14 @@
         background: var(--positive);
         animation: pulse 2s infinite;
     }
-
     .status-dot.offline {
         background: var(--negative);
         animation: none;
     }
-
     @keyframes pulse {
-
-        0%,
-        100% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0.4;
-        }
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
     }
-
     /* Filters */
     .filters {
         text-align: center;
@@ -116,14 +96,12 @@
         background: var(--bg-secondary);
         border-bottom: 1px solid var(--border);
     }
-
     .filters label {
         margin: 0 12px;
         font-size: 0.85rem;
         color: var(--text-secondary);
         font-weight: 500;
     }
-
     .filters select {
         background: var(--bg-primary);
         color: var(--text-primary);
@@ -136,16 +114,13 @@
         transition: border-color 0.2s;
         outline: none;
     }
-
     .filters select:hover {
         border-color: var(--accent);
     }
-
     .filters select:focus {
         border-color: var(--accent);
         box-shadow: 0 0 0 2px var(--accent-dim);
     }
-
     /* Grid */
     .grid {
         display: grid;
@@ -155,7 +130,6 @@
         max-width: 1600px;
         margin: 0 auto;
     }
-
     /* Cards */
     .card {
         background: var(--bg-card);
@@ -164,16 +138,13 @@
         border: 1px solid var(--border);
         transition: border-color 0.3s, transform 0.2s;
     }
-
     .card:hover {
         border-color: rgba(255, 230, 101, 0.3);
         transform: translateY(-2px);
     }
-
     .card.full-width {
         grid-column: 1 / -1;
     }
-
     .card h2 {
         font-size: 1rem;
         font-weight: 700;
@@ -185,16 +156,13 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-
     .card h2 .icon {
         font-size: 1.2rem;
     }
-
     canvas {
         width: 100% !important;
         max-height: 400px;
     }
-
     /* Stats */
     .stat-row {
         display: flex;
@@ -203,7 +171,6 @@
         gap: 16px;
         margin-bottom: 8px;
     }
-
     .stat-box {
         background: var(--bg-secondary);
         padding: 16px 24px;
@@ -213,13 +180,11 @@
         border: 1px solid var(--border);
         flex: 1;
     }
-
     .stat-box .val {
         font-size: 1.8rem;
         font-weight: 900;
         color: var(--accent);
     }
-
     .stat-box .lbl {
         font-size: 0.75rem;
         color: var(--text-secondary);
@@ -227,7 +192,6 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-
     /* Loading & Error */
     .loading,
     .error-msg {
@@ -236,11 +200,9 @@
         color: var(--text-secondary);
         font-size: 1.1rem;
     }
-
     .loading {
         color: var(--accent);
     }
-
     .error-msg {
         color: var(--negative);
         background: rgba(255, 85, 85, 0.05);
@@ -248,30 +210,25 @@
         border: 1px solid rgba(255, 85, 85, 0.2);
         margin: 20px;
     }
-
     /* Chart.js Overrides */
     .chartjs-tooltip {
         background: var(--bg-primary) !important;
         border: 1px solid var(--border) !important;
         border-radius: 8px !important;
     }
-
     @media (max-width: 900px) {
         .grid {
             grid-template-columns: 1fr;
             padding: 16px;
             gap: 16px;
         }
-
         .header h1 {
             font-size: 1.8rem;
         }
-
         .filters {
             flex-direction: column;
             gap: 10px;
         }
-
         .filters label {
             display: block;
             margin: 8px 0;
@@ -279,32 +236,31 @@
     }
     </style>
 </head>
-
 <body>
     <div class="header">
         <h1>Турнирная статистика</h1>
-        <p>Live данные из Google Sheets</p>
+        <p>Данные из Google Sheets</p>
         <div class="last-update" id="lastUpdate">
             <div class="status-dot offline" id="statusDot"></div> <span id="statusText">Загрузка...</span>
         </div>
     </div>
-    <div class="filters"> <label>Мин. матчей: <select id="minMatches" onchange="rebuildAll()">
+    <div class="filters"> 
+        <label>Мин. матчей: <select id="minMatches" onchange="rebuildAll()">
                 <option value="1">Все</option>
                 <option value="4">4+</option>
                 <option value="10" selected>10+</option>
                 <option value="20">20+</option>
                 <option value="50">50+</option>
-            </select> </label> <label>Сортировка: <select id="sortMode" onchange="rebuildAll()">
+            </select> 
+        </label> 
+        <label>Сортировка: <select id="sortMode" onchange="rebuildAll()">
                 <option value="elo" selected>По Эло</option>
                 <option value="winrate">По % побед</option>
                 <option value="avggz">По Ср.ГЗ</option>
                 <option value="name">По имени</option>
-            </select> </label> <label>Авто-обновление: <select id="autoRefresh" onchange="toggleAutoRefresh()">
-                <option value="0">Выкл</option>
-                <option value="30">30 сек</option>
-                <option value="60" selected>1 мин</option>
-                <option value="300">5 мин</option>
-            </select> </label> </div>
+            </select> 
+        </label> 
+    </div>
     <div id="dashboard">
         <div class="loading" id="loading">⏳ Загрузка данных...</div>
         <div class="grid" id="chartsContainer" style="display:none;">
@@ -345,630 +301,96 @@
         </div>
     </div>
     <script>
-        // ============================================================ // КОНФИГУРАЦИЯ // ============================================================
+        // ============================================================
+        // КОНФИГУРАЦИЯ
+        // ============================================================
         const CONFIG = {
-            apiUrl: 'https://docs.google.com/spreadsheets/d/13-iAur83oM6hD6UM8FGNtk5otIu6YOzt9WPSo9LPctA/gviz/tq?tqx=out:json&sheet=Рейтинг+полный',
-            csvUrl: 'https://docs.google.com/spreadsheets/d/13-iAur83oM6hD6UM8FGNtk5otIu6YOzt9WPSo9LPctA/gviz/tq?tqx=out:csv&sheet=Рейтинг+полный',
+            apiUrl: 'https://docs.google.com/spreadsheets/d/1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U/gviz/tq?tqx=out:json&sheet=Рейтинг+полный',
+            csvUrl: 'https://docs.google.com/spreadsheets/d/1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U/gviz/tq?tqx=out:csv&sheet=Рейтинг+полный',
             useFallback: true,
         };
+
         // Фоллбэк данные
         const FALLBACK_DATA = [{
-            rank: 1,
-            delta: "",
-            name: "ssann",
-            m: 8,
-            w: 8,
-            d: 0,
-            l: 0,
-            gd: 28,
-            gf: 45,
-            ga: 17,
-            avgGF: 5.63,
-            avgGA: 2.13,
-            avgPts: 3.00,
-            elo: 2669,
-            eloDelta: 0,
-            eloMax: 2669
+            rank: 1, delta: "", name: "ssann", m: 8, w: 8, d: 0, l: 0, gd: 28, gf: 45, ga: 17, avgGF: 5.63, avgGA: 2.13, avgPts: 3.00, elo: 2669, eloDelta: 0, eloMax: 2669
         }, {
-            rank: 2,
-            delta: "▲6",
-            name: "SpeedyGonzales",
-            m: 75,
-            w: 53,
-            d: 2,
-            l: 20,
-            gd: 135,
-            gf: 373,
-            ga: 238,
-            avgGF: 4.97,
-            avgGA: 3.17,
-            avgPts: 2.15,
-            elo: 2515,
-            eloDelta: 255,
-            eloMax: 2534
+            rank: 2, delta: "▲6", name: "SpeedyGonzales", m: 75, w: 53, d: 2, l: 20, gd: 135, gf: 373, ga: 238, avgGF: 4.97, avgGA: 3.17, avgPts: 2.15, elo: 2515, eloDelta: 255, eloMax: 2534
         }, {
-            rank: 3,
-            delta: "▼1",
-            name: "Фермер",
-            m: 45,
-            w: 27,
-            d: 4,
-            l: 14,
-            gd: 55,
-            gf: 220,
-            ga: 165,
-            avgGF: 4.89,
-            avgGA: 3.67,
-            avgPts: 1.89,
-            elo: 2432,
-            eloDelta: -72,
-            eloMax: 2613
+            rank: 3, delta: "▼1", name: "Фермер", m: 45, w: 27, d: 4, l: 14, gd: 55, gf: 220, ga: 165, avgGF: 4.89, avgGA: 3.67, avgPts: 1.89, elo: 2432, eloDelta: -72, eloMax: 2613
         }, {
-            rank: 4,
-            delta: "▼1",
-            name: "Barbod",
-            m: 39,
-            w: 33,
-            d: 1,
-            l: 5,
-            gd: 143,
-            gf: 235,
-            ga: 92,
-            avgGF: 6.03,
-            avgGA: 2.36,
-            avgPts: 2.56,
-            elo: 2408,
-            eloDelta: 0,
-            eloMax: 2675
+            rank: 4, delta: "▼1", name: "Barbod", m: 39, w: 33, d: 1, l: 5, gd: 143, gf: 235, ga: 92, avgGF: 6.03, avgGA: 2.36, avgPts: 2.56, elo: 2408, eloDelta: 0, eloMax: 2675
         }, {
-            rank: 5,
-            delta: "▼1",
-            name: "Burmulda",
-            m: 5,
-            w: 5,
-            d: 0,
-            l: 0,
-            gd: 18,
-            gf: 25,
-            ga: 7,
-            avgGF: 5.00,
-            avgGA: 1.40,
-            avgPts: 3.00,
-            elo: 2315,
-            eloDelta: 0,
-            eloMax: 2315
+            rank: 5, delta: "▼1", name: "Burmulda", m: 5, w: 5, d: 0, l: 0, gd: 18, gf: 25, ga: 7, avgGF: 5.00, avgGA: 1.40, avgPts: 3.00, elo: 2315, eloDelta: 0, eloMax: 2315
         }, {
-            rank: 6,
-            delta: "▼1",
-            name: "AzoTPro",
-            m: 7,
-            w: 4,
-            d: 1,
-            l: 2,
-            gd: 2,
-            gf: 28,
-            ga: 26,
-            avgGF: 4.00,
-            avgGA: 3.71,
-            avgPts: 1.86,
-            elo: 2290,
-            eloDelta: 0,
-            eloMax: 2335
+            rank: 6, delta: "▼1", name: "AzoTPro", m: 7, w: 4, d: 1, l: 2, gd: 2, gf: 28, ga: 26, avgGF: 4.00, avgGA: 3.71, avgPts: 1.86, elo: 2290, eloDelta: 0, eloMax: 2335
         }, {
-            rank: 7,
-            delta: "",
-            name: "PlatonKing",
-            m: 14,
-            w: 10,
-            d: 0,
-            l: 4,
-            gd: 35,
-            gf: 94,
-            ga: 59,
-            avgGF: 6.71,
-            avgGA: 4.21,
-            avgPts: 2.14,
-            elo: 2271,
-            eloDelta: 0,
-            eloMax: 2439
+            rank: 7, delta: "", name: "PlatonKing", m: 14, w: 10, d: 0, l: 4, gd: 35, gf: 94, ga: 59, avgGF: 6.71, avgGA: 4.21, avgPts: 2.14, elo: 2271, eloDelta: 0, eloMax: 2439
         }, {
-            rank: 8,
-            delta: "▼2",
-            name: "Nukl",
-            m: 81,
-            w: 39,
-            d: 8,
-            l: 34,
-            gd: 35,
-            gf: 348,
-            ga: 313,
-            avgGF: 4.30,
-            avgGA: 3.86,
-            avgPts: 1.54,
-            elo: 2218,
-            eloDelta: -59,
-            eloMax: 2413
+            rank: 8, delta: "▼2", name: "Nukl", m: 81, w: 39, d: 8, l: 34, gd: 35, gf: 348, ga: 313, avgGF: 4.30, avgGA: 3.86, avgPts: 1.54, elo: 2218, eloDelta: -59, eloMax: 2413
         }, {
-            rank: 9,
-            delta: "▲9",
-            name: "Kuvanch",
-            m: 67,
-            w: 30,
-            d: 4,
-            l: 33,
-            gd: -38,
-            gf: 291,
-            ga: 329,
-            avgGF: 4.34,
-            avgGA: 4.91,
-            avgPts: 1.40,
-            elo: 2200,
-            eloDelta: 246,
-            eloMax: 2302
+            rank: 9, delta: "▲9", name: "Kuvanch", m: 67, w: 30, d: 4, l: 33, gd: -38, gf: 291, ga: 329, avgGF: 4.34, avgGA: 4.91, avgPts: 1.40, elo: 2200, eloDelta: 246, eloMax: 2302
         }, {
-            rank: 10,
-            delta: "▼1",
-            name: "Kickovsh",
-            m: 6,
-            w: 4,
-            d: 0,
-            l: 2,
-            gd: 5,
-            gf: 25,
-            ga: 20,
-            avgGF: 4.17,
-            avgGA: 3.33,
-            avgPts: 2.00,
-            elo: 2096,
-            eloDelta: 0,
-            eloMax: 2096
+            rank: 10, delta: "▼1", name: "Kickovsh", m: 6, w: 4, d: 0, l: 2, gd: 5, gf: 25, ga: 20, avgGF: 4.17, avgGA: 3.33, avgPts: 2.00, elo: 2096, eloDelta: 0, eloMax: 2096
         }, {
-            rank: 11,
-            delta: "▲1",
-            name: "Usati",
-            m: 20,
-            w: 7,
-            d: 3,
-            l: 10,
-            gd: -9,
-            gf: 46,
-            ga: 55,
-            avgGF: 2.30,
-            avgGA: 2.75,
-            avgPts: 1.20,
-            elo: 2078,
-            eloDelta: 0,
-            eloMax: 2187
+            rank: 11, delta: "▲1", name: "Usati", m: 20, w: 7, d: 3, l: 10, gd: -9, gf: 46, ga: 55, avgGF: 2.30, avgGA: 2.75, avgPts: 1.20, elo: 2078, eloDelta: 0, eloMax: 2187
         }, {
-            rank: 12,
-            delta: "▲10",
-            name: "SoyRuso28",
-            m: 30,
-            w: 15,
-            d: 1,
-            l: 14,
-            gd: -1,
-            gf: 149,
-            ga: 150,
-            avgGF: 4.97,
-            avgGA: 5.00,
-            avgPts: 1.53,
-            elo: 2033,
-            eloDelta: 117,
-            eloMax: 2194
+            rank: 12, delta: "▲10", name: "SoyRuso28", m: 30, w: 15, d: 1, l: 14, gd: -1, gf: 149, ga: 150, avgGF: 4.97, avgGA: 5.00, avgPts: 1.53, elo: 2033, eloDelta: 117, eloMax: 2194
         }, {
-            rank: 13,
-            delta: "",
-            name: "Hakari",
-            m: 67,
-            w: 31,
-            d: 1,
-            l: 35,
-            gd: 0,
-            gf: 235,
-            ga: 235,
-            avgGF: 3.51,
-            avgGA: 3.51,
-            avgPts: 1.40,
-            elo: 2029,
-            eloDelta: -31,
-            eloMax: 2332
+            rank: 13, delta: "", name: "Hakari", m: 67, w: 31, d: 1, l: 35, gd: 0, gf: 235, ga: 235, avgGF: 3.51, avgGA: 3.51, avgPts: 1.40, elo: 2029, eloDelta: -31, eloMax: 2332
         }, {
-            rank: 14,
-            delta: "",
-            name: "Trsfeg",
-            m: 4,
-            w: 1,
-            d: 1,
-            l: 2,
-            gd: 0,
-            gf: 13,
-            ga: 13,
-            avgGF: 3.25,
-            avgGA: 3.25,
-            avgPts: 1.00,
-            elo: 2028,
-            eloDelta: 0,
-            eloMax: 2125
+            rank: 14, delta: "", name: "Trsfeg", m: 4, w: 1, d: 1, l: 2, gd: 0, gf: 13, ga: 13, avgGF: 3.25, avgGA: 3.25, avgPts: 1.00, elo: 2028, eloDelta: 0, eloMax: 2125
         }, {
-            rank: 15,
-            delta: "",
-            name: "Vovka",
-            m: 2,
-            w: 1,
-            d: 0,
-            l: 1,
-            gd: -1,
-            gf: 5,
-            ga: 6,
-            avgGF: 2.50,
-            avgGA: 3.00,
-            avgPts: 1.50,
-            elo: 2013,
-            eloDelta: 0,
-            eloMax: 2013
+            rank: 15, delta: "", name: "Vovka", m: 2, w: 1, d: 0, l: 1, gd: -1, gf: 5, ga: 6, avgGF: 2.50, avgGA: 3.00, avgPts: 1.50, elo: 2013, eloDelta: 0, eloMax: 2013
         }, {
-            rank: 16,
-            delta: "▼6",
-            name: "mosquit51",
-            m: 76,
-            w: 31,
-            d: 1,
-            l: 44,
-            gd: -37,
-            gf: 300,
-            ga: 337,
-            avgGF: 3.95,
-            avgGA: 4.43,
-            avgPts: 1.24,
-            elo: 1997,
-            eloDelta: -96,
-            eloMax: 2244
+            rank: 16, delta: "▼6", name: "mosquit51", m: 76, w: 31, d: 1, l: 44, gd: -37, gf: 300, ga: 337, avgGF: 3.95, avgGA: 4.43, avgPts: 1.24, elo: 1997, eloDelta: -96, eloMax: 2244
         }, {
-            rank: 17,
-            delta: "▼6",
-            name: "Dilshod",
-            m: 37,
-            w: 17,
-            d: 1,
-            l: 19,
-            gd: 3,
-            gf: 136,
-            ga: 133,
-            avgGF: 3.68,
-            avgGA: 3.59,
-            avgPts: 1.41,
-            elo: 1996,
-            eloDelta: -92,
-            eloMax: 2269
+            rank: 17, delta: "▼6", name: "Dilshod", m: 37, w: 17, d: 1, l: 19, gd: 3, gf: 136, ga: 133, avgGF: 3.68, avgGA: 3.59, avgPts: 1.41, elo: 1996, eloDelta: -92, eloMax: 2269
         }, {
-            rank: 18,
-            delta: "▼2",
-            name: "Cookie",
-            m: 3,
-            w: 0,
-            d: 1,
-            l: 2,
-            gd: -10,
-            gf: 5,
-            ga: 15,
-            avgGF: 1.67,
-            avgGA: 5.00,
-            avgPts: 0.33,
-            elo: 1977,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 18, delta: "▼2", name: "Cookie", m: 3, w: 0, d: 1, l: 2, gd: -10, gf: 5, ga: 15, avgGF: 1.67, avgGA: 5.00, avgPts: 0.33, elo: 1977, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 19,
-            delta: "▼2",
-            name: "Hakagi_Lin",
-            m: 4,
-            w: 2,
-            d: 0,
-            l: 2,
-            gd: -1,
-            gf: 17,
-            ga: 18,
-            avgGF: 4.25,
-            avgGA: 4.50,
-            avgPts: 1.50,
-            elo: 1960,
-            eloDelta: 0,
-            eloMax: 2159
+            rank: 19, delta: "▼2", name: "Hakagi_Lin", m: 4, w: 2, d: 0, l: 2, gd: -1, gf: 17, ga: 18, avgGF: 4.25, avgGA: 4.50, avgPts: 1.50, elo: 1960, eloDelta: 0, eloMax: 2159
         }, {
-            rank: 20,
-            delta: "▼1",
-            name: "Cold_52",
-            m: 22,
-            w: 9,
-            d: 1,
-            l: 12,
-            gd: -1,
-            gf: 73,
-            ga: 74,
-            avgGF: 3.32,
-            avgGA: 3.36,
-            avgPts: 1.27,
-            elo: 1931,
-            eloDelta: 0,
-            eloMax: 2210
+            rank: 20, delta: "▼1", name: "Cold_52", m: 22, w: 9, d: 1, l: 12, gd: -1, gf: 73, ga: 74, avgGF: 3.32, avgGA: 3.36, avgPts: 1.27, elo: 1931, eloDelta: 0, eloMax: 2210
         }, {
-            rank: 21,
-            delta: "▼1",
-            name: "enotik",
-            m: 6,
-            w: 2,
-            d: 0,
-            l: 4,
-            gd: -3,
-            gf: 23,
-            ga: 26,
-            avgGF: 3.83,
-            avgGA: 4.33,
-            avgPts: 1.00,
-            elo: 1918,
-            eloDelta: 0,
-            eloMax: 2014
+            rank: 21, delta: "▼1", name: "enotik", m: 6, w: 2, d: 0, l: 4, gd: -3, gf: 23, ga: 26, avgGF: 3.83, avgGA: 4.33, avgPts: 1.00, elo: 1918, eloDelta: 0, eloMax: 2014
         }, {
-            rank: 22,
-            delta: "▼1",
-            name: "coexxx",
-            m: 58,
-            w: 18,
-            d: 4,
-            l: 36,
-            gd: -83,
-            gf: 198,
-            ga: 281,
-            avgGF: 3.41,
-            avgGA: 4.84,
-            avgPts: 1.00,
-            elo: 1917,
-            eloDelta: 0,
-            eloMax: 2154
+            rank: 22, delta: "▼1", name: "coexxx", m: 58, w: 18, d: 4, l: 36, gd: -83, gf: 198, ga: 281, avgGF: 3.41, avgGA: 4.84, avgPts: 1.00, elo: 1917, eloDelta: 0, eloMax: 2154
         }, {
-            rank: 23,
-            delta: "",
-            name: "SLASH",
-            m: 47,
-            w: 20,
-            d: 6,
-            l: 21,
-            gd: -7,
-            gf: 162,
-            ga: 169,
-            avgGF: 3.45,
-            avgGA: 3.60,
-            avgPts: 1.40,
-            elo: 1908,
-            eloDelta: 0,
-            eloMax: 2266
+            rank: 23, delta: "", name: "SLASH", m: 47, w: 20, d: 6, l: 21, gd: -7, gf: 162, ga: 169, avgGF: 3.45, avgGA: 3.60, avgPts: 1.40, elo: 1908, eloDelta: 0, eloMax: 2266
         }, {
-            rank: 24,
-            delta: "",
-            name: "Maga49RUS",
-            m: 1,
-            w: 0,
-            d: 0,
-            l: 1,
-            gd: -3,
-            gf: 2,
-            ga: 5,
-            avgGF: 2.00,
-            avgGA: 5.00,
-            avgPts: 0.00,
-            elo: 1900,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 24, delta: "", name: "Maga49RUS", m: 1, w: 0, d: 0, l: 1, gd: -3, gf: 2, ga: 5, avgGF: 2.00, avgGA: 5.00, avgPts: 0.00, elo: 1900, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 25,
-            delta: "",
-            name: "Tipoka3HUK",
-            m: 3,
-            w: 0,
-            d: 0,
-            l: 3,
-            gd: -7,
-            gf: 8,
-            ga: 15,
-            avgGF: 2.67,
-            avgGA: 5.00,
-            avgPts: 0.00,
-            elo: 1864,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 25, delta: "", name: "Tipoka3HUK", m: 3, w: 0, d: 0, l: 3, gd: -7, gf: 8, ga: 15, avgGF: 2.67, avgGA: 5.00, avgPts: 0.00, elo: 1864, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 26,
-            delta: "",
-            name: "bomjizpitera",
-            m: 4,
-            w: 1,
-            d: 0,
-            l: 3,
-            gd: -5,
-            gf: 16,
-            ga: 21,
-            avgGF: 4.00,
-            avgGA: 5.25,
-            avgPts: 0.75,
-            elo: 1859,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 26, delta: "", name: "bomjizpitera", m: 4, w: 1, d: 0, l: 3, gd: -5, gf: 16, ga: 21, avgGF: 4.00, avgGA: 5.25, avgPts: 0.75, elo: 1859, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 27,
-            delta: "",
-            name: "w",
-            m: 6,
-            w: 1,
-            d: 0,
-            l: 5,
-            gd: -26,
-            gf: 9,
-            ga: 35,
-            avgGF: 1.50,
-            avgGA: 5.83,
-            avgPts: 0.50,
-            elo: 1810,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 27, delta: "", name: "w", m: 6, w: 1, d: 0, l: 5, gd: -26, gf: 9, ga: 35, avgGF: 1.50, avgGA: 5.83, avgPts: 0.50, elo: 1810, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 28,
-            delta: "",
-            name: "DTO13",
-            m: 20,
-            w: 8,
-            d: 0,
-            l: 12,
-            gd: -20,
-            gf: 66,
-            ga: 86,
-            avgGF: 3.30,
-            avgGA: 4.30,
-            avgPts: 1.20,
-            elo: 1798,
-            eloDelta: 0,
-            eloMax: 2162
+            rank: 28, delta: "", name: "DTO13", m: 20, w: 8, d: 0, l: 12, gd: -20, gf: 66, ga: 86, avgGF: 3.30, avgGA: 4.30, avgPts: 1.20, elo: 1798, eloDelta: 0, eloMax: 2162
         }, {
-            rank: 29,
-            delta: "",
-            name: "VELAFROZZY",
-            m: 3,
-            w: 0,
-            d: 0,
-            l: 3,
-            gd: -10,
-            gf: 4,
-            ga: 14,
-            avgGF: 1.33,
-            avgGA: 4.67,
-            avgPts: 0.00,
-            elo: 1782,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 29, delta: "", name: "VELAFROZZY", m: 3, w: 0, d: 0, l: 3, gd: -10, gf: 4, ga: 14, avgGF: 1.33, avgGA: 4.67, avgPts: 0.00, elo: 1782, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 30,
-            delta: "",
-            name: "Ураган",
-            m: 6,
-            w: 1,
-            d: 0,
-            l: 5,
-            gd: -12,
-            gf: 13,
-            ga: 25,
-            avgGF: 2.17,
-            avgGA: 4.17,
-            avgPts: 0.50,
-            elo: 1742,
-            eloDelta: 0,
-            eloMax: 2031
+            rank: 30, delta: "", name: "Ураган", m: 6, w: 1, d: 0, l: 5, gd: -12, gf: 13, ga: 25, avgGF: 2.17, avgGA: 4.17, avgPts: 0.50, elo: 1742, eloDelta: 0, eloMax: 2031
         }, {
-            rank: 31,
-            delta: "-",
-            name: "IlyaMichali4",
-            m: 3,
-            w: 0,
-            d: 0,
-            l: 3,
-            gd: -21,
-            gf: 2,
-            ga: 23,
-            avgGF: 0.67,
-            avgGA: 7.67,
-            avgPts: 0.00,
-            elo: 1732,
-            eloDelta: -268,
-            eloMax: 2000
+            rank: 31, delta: "-", name: "IlyaMichali4", m: 3, w: 0, d: 0, l: 3, gd: -21, gf: 2, ga: 23, avgGF: 0.67, avgGA: 7.67, avgPts: 0.00, elo: 1732, eloDelta: -268, eloMax: 2000
         }, {
-            rank: 32,
-            delta: "▼1",
-            name: "MorozGames",
-            m: 6,
-            w: 2,
-            d: 0,
-            l: 4,
-            gd: -30,
-            gf: 7,
-            ga: 37,
-            avgGF: 1.17,
-            avgGA: 6.17,
-            avgPts: 1.00,
-            elo: 1713,
-            eloDelta: 0,
-            eloMax: 2116
+            rank: 32, delta: "▼1", name: "MorozGames", m: 6, w: 2, d: 0, l: 4, gd: -30, gf: 7, ga: 37, avgGF: 1.17, avgGA: 6.17, avgPts: 1.00, elo: 1713, eloDelta: 0, eloMax: 2116
         }, {
-            rank: 33,
-            delta: "▼1",
-            name: "Balans",
-            m: 4,
-            w: 0,
-            d: 0,
-            l: 4,
-            gd: -29,
-            gf: 8,
-            ga: 37,
-            avgGF: 2.00,
-            avgGA: 9.25,
-            avgPts: 0.00,
-            elo: 1684,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 33, delta: "▼1", name: "Balans", m: 4, w: 0, d: 0, l: 4, gd: -29, gf: 8, ga: 37, avgGF: 2.00, avgGA: 9.25, avgPts: 0.00, elo: 1684, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 34,
-            delta: "▼1",
-            name: "Фотя",
-            m: 6,
-            w: 0,
-            d: 0,
-            l: 6,
-            gd: -24,
-            gf: 9,
-            ga: 33,
-            avgGF: 1.50,
-            avgGA: 5.50,
-            avgPts: 0.00,
-            elo: 1682,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 34, delta: "▼1", name: "Фотя", m: 6, w: 0, d: 0, l: 6, gd: -24, gf: 9, ga: 33, avgGF: 1.50, avgGA: 5.50, avgPts: 0.00, elo: 1682, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 35,
-            delta: "▼1",
-            name: "Elizaveta",
-            m: 6,
-            w: 0,
-            d: 0,
-            l: 6,
-            gd: -29,
-            gf: 11,
-            ga: 40,
-            avgGF: 1.83,
-            avgGA: 6.67,
-            avgPts: 0.00,
-            elo: 1677,
-            eloDelta: 0,
-            eloMax: 2000
+            rank: 35, delta: "▼1", name: "Elizaveta", m: 6, w: 0, d: 0, l: 6, gd: -29, gf: 11, ga: 40, avgGF: 1.83, avgGA: 6.67, avgPts: 0.00, elo: 1677, eloDelta: 0, eloMax: 2000
         }, {
-            rank: 36,
-            delta: "▼1",
-            name: "Foma67",
-            m: 15,
-            w: 3,
-            d: 0,
-            l: 12,
-            gd: -52,
-            gf: 27,
-            ga: 79,
-            avgGF: 1.80,
-            avgGA: 5.27,
-            avgPts: 0.60,
-            elo: 1558,
-            eloDelta: 0,
-            eloMax: 2042
+            rank: 36, delta: "▼1", name: "Foma67", m: 15, w: 3, d: 0, l: 12, gd: -52, gf: 27, ga: 79, avgGF: 1.80, avgGA: 5.27, avgPts: 0.60, elo: 1558, eloDelta: 0, eloMax: 2042
         }];
+
         let charts = {};
-        let autoRefreshTimer = null;
         let RAW_DATA = FALLBACK_DATA;
-        // ============================================================ // УТИЛИТЫ // ============================================================
+
+        // ============================================================
+        // УТИЛИТЫ
+        // ============================================================
         function toNum(val) {
             if (val === null || val === undefined || val === '') return 0;
             const n = parseFloat(String(val).replace(',', '.'));
@@ -1022,7 +444,10 @@
                 };
             }).filter(Boolean);
         }
-        // ============================================================ // ЗАГРУЗКА ДАННЫХ // ============================================================
+
+        // ============================================================
+        // ЗАГРУЗКА ДАННЫХ
+        // ============================================================
         async function loadFromVisualizationAPI(url) {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`API HTTP ${response.status}`);
@@ -1053,11 +478,13 @@
                 };
             });
         }
+
         async function loadFromCSV(url) {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`CSV HTTP ${response.status}`);
             return parseCSV(await response.text());
         }
+
         async function loadData() {
             try {
                 if (CONFIG.apiUrl && !CONFIG.apiUrl.includes('YOUR_SHEET_ID')) {
@@ -1095,25 +522,10 @@
         function showError(msg) {
             document.getElementById('dashboard').innerHTML = `<div class="error-msg">❌ Ошибка: ${msg}</div>`;
         }
-        // ============================================================ // АВТО-ОБНОВЛЕНИЕ // ============================================================
-        function toggleAutoRefresh() {
-            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-            const secs = parseInt(document.getElementById('autoRefresh').value);
-            if (secs > 0) {
-                autoRefreshTimer = setInterval(async () => {
-                    try {
-                        if (!CONFIG.apiUrl.includes('YOUR_SHEET_ID')) {
-                            RAW_DATA = await loadFromVisualizationAPI(CONFIG.apiUrl);
-                            setStatus(true, 'Авто-обновление');
-                            rebuildAll();
-                        }
-                    } catch (e) {
-                        console.warn('Auto-refresh error:', e);
-                    }
-                }, secs * 1000);
-            }
-        }
-        // ============================================================ // ФИЛЬТРЫ И СОРТИРОВКА // ============================================================ 
+
+        // ============================================================
+        // ФИЛЬТРЫ И СОРТИРОВКА
+        // ============================================================
         function getFiltered() {
             const minM = parseInt(document.getElementById('minMatches').value);
             const sortMode = document.getElementById('sortMode').value;
@@ -1149,6 +561,7 @@
             if (elo >= 1800) return '#ffb86c';
             return '#ff5555';
         }
+
         const TOOLTIP_CONFIG = {
             backgroundColor: '#161817',
             titleColor: '#ffe665',
@@ -1157,27 +570,28 @@
             borderWidth: 1,
             padding: 12,
             cornerRadius: 8,
-            titleFont: {
-                weight: '700'
-            },
-            bodyFont: {
-                weight: '500'
-            },
+            titleFont: { weight: '700' },
+            bodyFont: { weight: '500' },
         };
-        const GRID_COMMON = {
-            color: 'rgba(255,255,255,0.04)'
-        };
-        const TICKS_COMMON = {
-            color: '#555'
-        };
-        // ============================================================ // ГРАФИКИ // ============================================================
+        const GRID_COMMON = { color: 'rgba(255,255,255,0.04)' };
+        const TICKS_COMMON = { color: '#555' };
+
+        // ============================================================
+        // ГРАФИКИ
+        // ============================================================
         function buildSummary(data) {
             const totalGoals = data.reduce((s, p) => s + p.gf, 0);
             const totalMatches = data.reduce((s, p) => s + p.m, 0);
             const avgElo = Math.round(data.reduce((s, p) => s + p.elo, 0) / data.length);
             const bestAttack = [...data].sort((a, b) => b.avgGF - a.avgGF)[0];
             const bestDefence = [...data].sort((a, b) => a.avgGA - b.avgGA)[0];
-            document.getElementById('summaryStats').innerHTML = ` <div class="stat-box"><div class="val">${data.length}</div><div class="lbl">Игроков</div></div> <div class="stat-box"><div class="val">${totalMatches}</div><div class="lbl">Матчей</div></div> <div class="stat-box"><div class="val">${totalGoals}</div><div class="lbl">Голов</div></div> <div class="stat-box"><div class="val">${avgElo}</div><div class="lbl">Ср. Эло</div></div> <div class="stat-box"><div class="val">${bestAttack?.name || '-'}</div><div class="lbl">Лучшая атака</div></div> <div class="stat-box"><div class="val">${bestDefence?.name || '-'}</div><div class="lbl">Лучшая оборона</div></div> `;
+            document.getElementById('summaryStats').innerHTML = `
+                <div class="stat-box"><div class="val">${data.length}</div><div class="lbl">Игроков</div></div>
+                <div class="stat-box"><div class="val">${totalMatches}</div><div class="lbl">Матчей</div></div>
+                <div class="stat-box"><div class="val">${totalGoals}</div><div class="lbl">Голов</div></div>
+                <div class="stat-box"><div class="val">${avgElo}</div><div class="lbl">Ср. Эло</div></div>
+                <div class="stat-box"><div class="val">${bestAttack?.name || '-'}</div><div class="lbl">Лучшая атака</div></div>
+                <div class="stat-box"><div class="val">${bestDefence?.name || '-'}</div><div class="lbl">Лучшая оборона</div></div>`;
         }
 
         function buildEloChart(data) {
@@ -1198,9 +612,7 @@
                     responsive: true,
                     indexAxis: 'y',
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
@@ -1209,23 +621,8 @@
                         }
                     },
                     scales: {
-                        x: {
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON,
-                            min: 1500
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#aaa',
-                                font: {
-                                    weight: 600,
-                                    size: 11
-                                }
-                            }
-                        }
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON, min: 1500 },
+                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600, size: 11 } } }
                     }
                 }
             });
@@ -1261,11 +658,7 @@
                     responsive: true,
                     indexAxis: 'y',
                     plugins: {
-                        legend: {
-                            labels: {
-                                color: '#888'
-                            }
-                        },
+                        legend: { labels: { color: '#888' } },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
@@ -1278,23 +671,8 @@
                         }
                     },
                     scales: {
-                        x: {
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON,
-                            min: 1500
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#aaa',
-                                font: {
-                                    weight: 600,
-                                    size: 11
-                                }
-                            }
-                        }
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON, min: 1500 },
+                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600, size: 11 } } }
                     }
                 }
             });
@@ -1317,9 +695,7 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
@@ -1328,26 +704,8 @@
                         }
                     },
                     scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#888',
-                                maxRotation: 45,
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        },
-                        y: {
-                            grid: GRID_COMMON,
-                            ticks: {
-                                ...TICKS_COMMON,
-                                callback: v => v + '%'
-                            },
-                            max: 100
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
+                        y: { grid: GRID_COMMON, ticks: { ...TICKS_COMMON, callback: v => v + '%' }, max: 100 }
                     }
                 }
             });
@@ -1375,31 +733,10 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#888'
-                            }
-                        },
-                        tooltip: TOOLTIP_CONFIG
-                    },
+                    plugins: { legend: { labels: { color: '#888' } }, tooltip: TOOLTIP_CONFIG },
                     scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#888',
-                                maxRotation: 45,
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        },
-                        y: {
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
+                        y: { grid: GRID_COMMON, ticks: TICKS_COMMON }
                     }
                 }
             });
@@ -1423,29 +760,10 @@
                 options: {
                     responsive: true,
                     indexAxis: 'y',
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: TOOLTIP_CONFIG
-                    },
+                    plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: {
-                        x: {
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#aaa',
-                                font: {
-                                    weight: 600,
-                                    size: 11
-                                }
-                            }
-                        }
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON },
+                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600, size: 11 } } }
                     }
                 }
             });
@@ -1467,28 +785,10 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: TOOLTIP_CONFIG
-                    },
+                    plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#aaa',
-                                font: {
-                                    weight: 600
-                                }
-                            }
-                        },
-                        y: {
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600 } } },
+                        y: { grid: GRID_COMMON, ticks: TICKS_COMMON }
                     }
                 }
             });
@@ -1496,13 +796,7 @@
 
         function buildScatterChart(data) {
             destroyChart('scatter');
-            const scatterData = data.map(p => ({
-                x: p.avgGF,
-                y: p.avgGA,
-                label: p.name,
-                elo: p.elo,
-                m: p.m
-            }));
+            const scatterData = data.map(p => ({ x: p.avgGF, y: p.avgGA, label: p.name, elo: p.elo, m: p.m }));
             charts.scatter = new Chart(document.getElementById('scatterChart'), {
                 type: 'scatter',
                 data: {
@@ -1518,9 +812,7 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
@@ -1533,31 +825,13 @@
                     },
                     scales: {
                         x: {
-                            title: {
-                                display: true,
-                                text: 'Ср.ГЗ (атака)',
-                                color: '#50fa7b',
-                                font: {
-                                    weight: 700,
-                                    size: 11
-                                }
-                            },
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON
+                            title: { display: true, text: 'Ср.ГЗ (атака)', color: '#50fa7b', font: { weight: 700, size: 11 } },
+                            grid: GRID_COMMON, ticks: TICKS_COMMON
                         },
                         y: {
-                            title: {
-                                display: true,
-                                text: 'Ср.ГП (оборона)',
-                                color: '#ff5555',
-                                font: {
-                                    weight: 700,
-                                    size: 11
-                                }
-                            },
+                            title: { display: true, text: 'Ср.ГП (оборона)', color: '#ff5555', font: { weight: 700, size: 11 } },
                             reverse: true,
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON
+                            grid: GRID_COMMON, ticks: TICKS_COMMON
                         }
                     }
                 }
@@ -1579,30 +853,10 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: TOOLTIP_CONFIG
-                    },
+                    plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#888',
-                                maxRotation: 45,
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        },
-                        y: {
-                            grid: GRID_COMMON,
-                            ticks: TICKS_COMMON,
-                            max: 3.2
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
+                        y: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.2 }
                     }
                 }
             });
@@ -1610,27 +864,13 @@
 
         function buildMatchesDistChart(data) {
             destroyChart('matchesDist');
-            const bins = [{
-                label: '1-5',
-                min: 1,
-                max: 5
-            }, {
-                label: '6-15',
-                min: 6,
-                max: 15
-            }, {
-                label: '16-30',
-                min: 16,
-                max: 30
-            }, {
-                label: '31-50',
-                min: 31,
-                max: 50
-            }, {
-                label: '51+',
-                min: 51,
-                max: 999
-            }, ];
+            const bins = [
+                { label: '1-5', min: 1, max: 5 },
+                { label: '6-15', min: 6, max: 15 },
+                { label: '16-30', min: 16, max: 30 },
+                { label: '31-50', min: 31, max: 50 },
+                { label: '51+', min: 51, max: 999 },
+            ];
             const counts = bins.map(b => RAW_DATA.filter(p => p.m >= b.min && p.m <= b.max).length);
             charts.matchesDist = new Chart(document.getElementById('matchesDistChart'), {
                 type: 'doughnut',
@@ -1649,13 +889,7 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: {
-                                color: '#888',
-                                padding: 14,
-                                font: {
-                                    size: 11
-                                }
-                            }
+                            labels: { color: '#888', padding: 14, font: { size: 11 } }
                         },
                         tooltip: TOOLTIP_CONFIG
                     },
@@ -1672,7 +906,13 @@
             const colors = ['#50fa7b', '#8be9fd', '#ffe665', '#ff79c6', '#bd93f9', '#ffb86c', '#ff5555', '#6272a4', '#44475a', '#f1fa8c'];
             const datasets = top10.map((p, i) => ({
                 label: p.name,
-                data: [(p.elo / maxElo * 100), ((p.w / p.m) * 100), (p.avgGF / maxAvgGF * 100), ((1 - p.avgGA / 10) * 100), (p.avgPts / 3 * 100), ],
+                data: [
+                    (p.elo / maxElo * 100),
+                    ((p.w / p.m) * 100),
+                    (p.avgGF / maxAvgGF * 100),
+                    ((1 - p.avgGA / 10) * 100),
+                    (p.avgPts / 3 * 100),
+                ],
                 borderColor: colors[i],
                 backgroundColor: colors[i] + '10',
                 borderWidth: 2,
@@ -1690,36 +930,16 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: {
-                                color: '#888',
-                                padding: 12,
-                                font: {
-                                    size: 11
-                                }
-                            }
+                            labels: { color: '#888', padding: 12, font: { size: 11 } }
                         },
                         tooltip: TOOLTIP_CONFIG
                     },
                     scales: {
                         r: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.06)'
-                            },
-                            angleLines: {
-                                color: 'rgba(255,255,255,0.06)'
-                            },
-                            ticks: {
-                                color: '#444',
-                                backdropColor: 'transparent',
-                                stepSize: 25
-                            },
-                            pointLabels: {
-                                color: '#aaa',
-                                font: {
-                                    size: 12,
-                                    weight: 600
-                                }
-                            },
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            angleLines: { color: 'rgba(255,255,255,0.06)' },
+                            ticks: { color: '#444', backdropColor: 'transparent', stepSize: 25 },
+                            pointLabels: { color: '#aaa', font: { size: 12, weight: 600 } },
                             suggestedMin: 20,
                             suggestedMax: 100,
                         }
@@ -1742,6 +962,7 @@
             buildMatchesDistChart(data);
             buildRadarChart(data);
         }
+
         // Запуск
         loadData().then(() => {
             document.getElementById('loading').style.display = 'none';
@@ -1752,5 +973,4 @@
         });
     </script>
 </body>
-
 </html>
