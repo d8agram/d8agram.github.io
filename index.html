@@ -332,7 +332,7 @@
         // КОНФИГУРАЦИЯ
         // ============================================================
         const CONFIG = {
-            sheetId: '1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U',
+            sheetId: 'YOUR_SHEET_ID',
             fullSheetName: 'Рейтинг полный',
             activeSheetName: 'Рейтинг активных',
             useFallback: true,
@@ -342,79 +342,64 @@
         let charts = {};
         let RAW_DATA = [];
 
-        const FALLBACK_DATA_FULL = [{
-            rank: 1, delta: "", name: "ssann", m: 8, w: 8, d: 0, l: 0, gd: 28, gf: 45, ga: 17, avgGF: 5.63, avgGA: 2.13, avgPts: 3.00, elo: 2669, eloDelta: 0, eloMax: 2669
-        }, {
-            rank: 2, delta: "▲6", name: "SpeedyGonzales", m: 75, w: 53, d: 2, l: 20, gd: 135, gf: 373, ga: 238, avgGF: 4.97, avgGA: 3.17, avgPts: 2.15, elo: 2515, eloDelta: 255, eloMax: 2534
-        }, {
-            rank: 3, delta: "▼1", name: "Фермер", m: 45, w: 27, d: 4, l: 14, gd: 55, gf: 220, ga: 165, avgGF: 4.89, avgGA: 3.67, avgPts: 1.89, elo: 2432, eloDelta: -72, eloMax: 2613
-        }, {
-            rank: 4, delta: "▼1", name: "Barbod", m: 39, w: 33, d: 1, l: 5, gd: 143, gf: 235, ga: 92, avgGF: 6.03, avgGA: 2.36, avgPts: 2.56, elo: 2408, eloDelta: 0, eloMax: 2675
-        }, {
-            rank: 5, delta: "▼1", name: "Burmulda", m: 5, w: 5, d: 0, l: 0, gd: 18, gf: 25, ga: 7, avgGF: 5.00, avgGA: 1.40, avgPts: 3.00, elo: 2315, eloDelta: 0, eloMax: 2315
-        }, {
-            rank: 6, delta: "▼1", name: "AzoTPro", m: 7, w: 4, d: 1, l: 2, gd: 2, gf: 28, ga: 26, avgGF: 4.00, avgGA: 3.71, avgPts: 1.86, elo: 2290, eloDelta: 0, eloMax: 2335
-        }, {
-            rank: 7, delta: "", name: "PlatonKing", m: 14, w: 10, d: 0, l: 4, gd: 35, gf: 94, ga: 59, avgGF: 6.71, avgGA: 4.21, avgPts: 2.14, elo: 2271, eloDelta: 0, eloMax: 2439
-        }, {
-            rank: 8, delta: "▼2", name: "Nukl", m: 81, w: 39, d: 8, l: 34, gd: 35, gf: 348, ga: 313, avgGF: 4.30, avgGA: 3.86, avgPts: 1.54, elo: 2218, eloDelta: -59, eloMax: 2413
-        }, {
-            rank: 9, delta: "▲9", name: "Kuvanch", m: 67, w: 30, d: 4, l: 33, gd: -38, gf: 291, ga: 329, avgGF: 4.34, avgGA: 4.91, avgPts: 1.40, elo: 2200, eloDelta: 246, eloMax: 2302
-        }, {
-            rank: 10, delta: "▼1", name: "Kickovsh", m: 6, w: 4, d: 0, l: 2, gd: 5, gf: 25, ga: 20, avgGF: 4.17, avgGA: 3.33, avgPts: 2.00, elo: 2096, eloDelta: 0, eloMax: 2096
-        }, {
-            rank: 11, delta: "▲1", name: "Usati", m: 20, w: 7, d: 3, l: 10, gd: -9, gf: 46, ga: 55, avgGF: 2.30, avgGA: 2.75, avgPts: 1.20, elo: 2078, eloDelta: 0, eloMax: 2187
-        }, {
-            rank: 12, delta: "▲10", name: "SoyRuso28", m: 30, w: 15, d: 1, l: 14, gd: -1, gf: 149, ga: 150, avgGF: 4.97, avgGA: 5.00, avgPts: 1.53, elo: 2033, eloDelta: 117, eloMax: 2194
-        }, {
-            rank: 13, delta: "", name: "Hakari", m: 67, w: 31, d: 1, l: 35, gd: 0, gf: 235, ga: 235, avgGF: 3.51, avgGA: 3.51, avgPts: 1.40, elo: 2029, eloDelta: -31, eloMax: 2332
-        }, {
-            rank: 14, delta: "", name: "Trsfeg", m: 4, w: 1, d: 1, l: 2, gd: 0, gf: 13, ga: 13, avgGF: 3.25, avgGA: 3.25, avgPts: 1.00, elo: 2028, eloDelta: 0, eloMax: 2125
-        }, {
-            rank: 15, delta: "", name: "Vovka", m: 2, w: 1, d: 0, l: 1, gd: -1, gf: 5, ga: 6, avgGF: 2.50, avgGA: 3.00, avgPts: 1.50, elo: 2013, eloDelta: 0, eloMax: 2013
-        }, {
-            rank: 16, delta: "▼6", name: "mosquit51", m: 76, w: 31, d: 1, l: 44, gd: -37, gf: 300, ga: 337, avgGF: 3.95, avgGA: 4.43, avgPts: 1.24, elo: 1997, eloDelta: -96, eloMax: 2244
-        }, {
-            rank: 17, delta: "▼6", name: "Dilshod", m: 37, w: 17, d: 1, l: 19, gd: 3, gf: 136, ga: 133, avgGF: 3.68, avgGA: 3.59, avgPts: 1.41, elo: 1996, eloDelta: -92, eloMax: 2269
-        }, {
-            rank: 18, delta: "▼2", name: "Cookie", m: 3, w: 0, d: 1, l: 2, gd: -10, gf: 5, ga: 15, avgGF: 1.67, avgGA: 5.00, avgPts: 0.33, elo: 1977, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 19, delta: "▼2", name: "Hakagi_Lin", m: 4, w: 2, d: 0, l: 2, gd: -1, gf: 17, ga: 18, avgGF: 4.25, avgGA: 4.50, avgPts: 1.50, elo: 1960, eloDelta: 0, eloMax: 2159
-        }, {
-            rank: 20, delta: "▼1", name: "Cold_52", m: 22, w: 9, d: 1, l: 12, gd: -1, gf: 73, ga: 74, avgGF: 3.32, avgGA: 3.36, avgPts: 1.27, elo: 1931, eloDelta: 0, eloMax: 2210
-        }, {
-            rank: 21, delta: "▼1", name: "enotik", m: 6, w: 2, d: 0, l: 4, gd: -3, gf: 23, ga: 26, avgGF: 3.83, avgGA: 4.33, avgPts: 1.00, elo: 1918, eloDelta: 0, eloMax: 2014
-        }, {
-            rank: 22, delta: "▼1", name: "coexxx", m: 58, w: 18, d: 4, l: 36, gd: -83, gf: 198, ga: 281, avgGF: 3.41, avgGA: 4.84, avgPts: 1.00, elo: 1917, eloDelta: 0, eloMax: 2154
-        }, {
-            rank: 23, delta: "", name: "SLASH", m: 47, w: 20, d: 6, l: 21, gd: -7, gf: 162, ga: 169, avgGF: 3.45, avgGA: 3.60, avgPts: 1.40, elo: 1908, eloDelta: 0, eloMax: 2266
-        }, {
-            rank: 24, delta: "", name: "Maga49RUS", m: 1, w: 0, d: 0, l: 1, gd: -3, gf: 2, ga: 5, avgGF: 2.00, avgGA: 5.00, avgPts: 0.00, elo: 1900, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 25, delta: "", name: "Tipoka3HUK", m: 3, w: 0, d: 0, l: 3, gd: -7, gf: 8, ga: 15, avgGF: 2.67, avgGA: 5.00, avgPts: 0.00, elo: 1864, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 26, delta: "", name: "bomjizpitera", m: 4, w: 1, d: 0, l: 3, gd: -5, gf: 16, ga: 21, avgGF: 4.00, avgGA: 5.25, avgPts: 0.75, elo: 1859, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 27, delta: "", name: "w", m: 6, w: 1, d: 0, l: 5, gd: -26, gf: 9, ga: 35, avgGF: 1.50, avgGA: 5.83, avgPts: 0.50, elo: 1810, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 28, delta: "", name: "DTO13", m: 20, w: 8, d: 0, l: 12, gd: -20, gf: 66, ga: 86, avgGF: 3.30, avgGA: 4.30, avgPts: 1.20, elo: 1798, eloDelta: 0, eloMax: 2162
-        }, {
-            rank: 29, delta: "", name: "VELAFROZZY", m: 3, w: 0, d: 0, l: 3, gd: -10, gf: 4, ga: 14, avgGF: 1.33, avgGA: 4.67, avgPts: 0.00, elo: 1782, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 30, delta: "", name: "Ураган", m: 6, w: 1, d: 0, l: 5, gd: -12, gf: 13, ga: 25, avgGF: 2.17, avgGA: 4.17, avgPts: 0.50, elo: 1742, eloDelta: 0, eloMax: 2031
-        }, {
-            rank: 31, delta: "-", name: "IlyaMichali4", m: 3, w: 0, d: 0, l: 3, gd: -21, gf: 2, ga: 23, avgGF: 0.67, avgGA: 7.67, avgPts: 0.00, elo: 1732, eloDelta: -268, eloMax: 2000
-        }, {
-            rank: 32, delta: "▼1", name: "MorozGames", m: 6, w: 2, d: 0, l: 4, gd: -30, gf: 7, ga: 37, avgGF: 1.17, avgGA: 6.17, avgPts: 1.00, elo: 1713, eloDelta: 0, eloMax: 2116
-        }, {
-            rank: 33, delta: "▼1", name: "Balans", m: 4, w: 0, d: 0, l: 4, gd: -29, gf: 8, ga: 37, avgGF: 2.00, avgGA: 9.25, avgPts: 0.00, elo: 1684, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 34, delta: "▼1", name: "Фотя", m: 6, w: 0, d: 0, l: 6, gd: -24, gf: 9, ga: 33, avgGF: 1.50, avgGA: 5.50, avgPts: 0.00, elo: 1682, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 35, delta: "▼1", name: "Elizaveta", m: 6, w: 0, d: 0, l: 6, gd: -29, gf: 11, ga: 40, avgGF: 1.83, avgGA: 6.67, avgPts: 0.00, elo: 1677, eloDelta: 0, eloMax: 2000
-        }, {
-            rank: 36, delta: "▼1", name: "Foma67", m: 15, w: 3, d: 0, l: 12, gd: -52, gf: 27, ga: 79, avgGF: 1.80, avgGA: 5.27, avgPts: 0.60, elo: 1558, eloDelta: 0, eloMax: 2042
-        }];
+        const FALLBACK_DATA_FULL = [
+            { rank: 1, delta: "", name: "ssann", m: 8, w: 8, d: 0, l: 0, gd: 28, gf: 45, ga: 17, avgGF: 5.63, avgGA: 2.13, avgPts: 3.00, elo: 2669, eloDelta: 0, eloMax: 2669 },
+            { rank: 2, delta: "▲1", name: "Фермер", m: 53, w: 33, d: 6, l: 14, gd: 69, gf: 256, ga: 187, avgGF: 4.83, avgGA: 3.53, avgPts: 1.98, elo: 2613, eloDelta: 181, eloMax: 2613 },
+            { rank: 3, delta: "▲1", name: "Barbod", m: 39, w: 33, d: 1, l: 5, gd: 143, gf: 235, ga: 92, avgGF: 6.03, avgGA: 2.36, avgPts: 2.56, elo: 2408, eloDelta: 0, eloMax: 2675 },
+            { rank: 4, delta: "▲4", name: "Nukl", m: 88, w: 43, d: 9, l: 36, gd: 44, gf: 380, ga: 336, avgGF: 4.32, avgGA: 3.82, avgPts: 1.57, elo: 2327, eloDelta: 109, eloMax: 2413 },
+            { rank: 5, delta: "▼3", name: "SpeedyGonzales", m: 81, w: 56, d: 2, l: 23, gd: 137, gf: 394, ga: 257, avgGF: 4.86, avgGA: 3.17, avgPts: 2.10, elo: 2321, eloDelta: -194, eloMax: 2552 },
+            { rank: 6, delta: "▼1", name: "Burmulda", m: 5, w: 5, d: 0, l: 0, gd: 18, gf: 25, ga: 7, avgGF: 5.00, avgGA: 1.40, avgPts: 3.00, elo: 2315, eloDelta: 0, eloMax: 2315 },
+            { rank: 7, delta: "▼1", name: "AzoTPro", m: 7, w: 4, d: 1, l: 2, gd: 2, gf: 28, ga: 26, avgGF: 4.00, avgGA: 3.71, avgPts: 1.86, elo: 2290, eloDelta: 0, eloMax: 2335 },
+            { rank: 8, delta: "▼1", name: "PlatonKing", m: 14, w: 10, d: 0, l: 4, gd: 35, gf: 94, ga: 59, avgGF: 6.71, avgGA: 4.21, avgPts: 2.14, elo: 2271, eloDelta: 0, eloMax: 2439 },
+            { rank: 9, delta: "▲4", name: "Hakari", m: 74, w: 35, d: 2, l: 37, gd: 13, gf: 274, ga: 261, avgGF: 3.70, avgGA: 3.53, avgPts: 1.45, elo: 2253, eloDelta: 224, eloMax: 2332 },
+            { rank: 10, delta: "", name: "Kickovsh", m: 6, w: 4, d: 0, l: 2, gd: 5, gf: 25, ga: 20, avgGF: 4.17, avgGA: 3.33, avgPts: 2.00, elo: 2096, eloDelta: 0, eloMax: 2096 },
+            { rank: 11, delta: "", name: "Usati", m: 20, w: 7, d: 3, l: 10, gd: -9, gf: 46, ga: 55, avgGF: 2.30, avgGA: 2.75, avgPts: 1.20, elo: 2078, eloDelta: 0, eloMax: 2187 },
+            { rank: 12, delta: "", name: "SoyRuso28", m: 30, w: 15, d: 1, l: 14, gd: -1, gf: 149, ga: 150, avgGF: 4.97, avgGA: 5.00, avgPts: 1.53, elo: 2033, eloDelta: 0, eloMax: 2194 },
+            { rank: 13, delta: "▲1", name: "Trsfeg", m: 4, w: 1, d: 1, l: 2, gd: 0, gf: 13, ga: 13, avgGF: 3.25, avgGA: 3.25, avgPts: 1.00, elo: 2028, eloDelta: 0, eloMax: 2125 },
+            { rank: 14, delta: "▲2", name: "mosquit51", m: 81, w: 33, d: 1, l: 47, gd: -36, gf: 322, ga: 358, avgGF: 3.98, avgGA: 4.42, avgPts: 1.23, elo: 2013, eloDelta: 16, eloMax: 2244 },
+            { rank: 15, delta: "", name: "Vovka", m: 2, w: 1, d: 0, l: 1, gd: -1, gf: 5, ga: 6, avgGF: 2.50, avgGA: 3.00, avgPts: 1.50, elo: 2013, eloDelta: 0, eloMax: 2013 },
+            { rank: 16, delta: "▼7", name: "Kuvanch", m: 72, w: 31, d: 4, l: 37, gd: -46, gf: 311, ga: 357, avgGF: 4.32, avgGA: 4.96, avgPts: 1.35, elo: 2001, eloDelta: -199, eloMax: 2302 },
+            { rank: 17, delta: "", name: "Dilshod", m: 37, w: 17, d: 1, l: 19, gd: 3, gf: 136, ga: 133, avgGF: 3.68, avgGA: 3.59, avgPts: 1.41, elo: 1996, eloDelta: 0, eloMax: 2269 },
+            { rank: 18, delta: "", name: "Cookie", m: 3, w: 0, d: 1, l: 2, gd: -10, gf: 5, ga: 15, avgGF: 1.67, avgGA: 5.00, avgPts: 0.33, elo: 1977, eloDelta: 0, eloMax: 2000 },
+            { rank: 19, delta: "", name: "Hakagi_Lin", m: 4, w: 2, d: 0, l: 2, gd: -1, gf: 17, ga: 18, avgGF: 4.25, avgGA: 4.50, avgPts: 1.50, elo: 1960, eloDelta: 0, eloMax: 2159 },
+            { rank: 20, delta: "", name: "Cold_52", m: 22, w: 9, d: 1, l: 12, gd: -1, gf: 73, ga: 74, avgGF: 3.32, avgGA: 3.36, avgPts: 1.27, elo: 1931, eloDelta: 0, eloMax: 2210 },
+            { rank: 21, delta: "", name: "enotik", m: 6, w: 2, d: 0, l: 4, gd: -3, gf: 23, ga: 26, avgGF: 3.83, avgGA: 4.33, avgPts: 1.00, elo: 1918, eloDelta: 0, eloMax: 2014 },
+            { rank: 22, delta: "", name: "coexxx", m: 58, w: 18, d: 4, l: 36, gd: -83, gf: 198, ga: 281, avgGF: 3.41, avgGA: 4.84, avgPts: 1.00, elo: 1917, eloDelta: 0, eloMax: 2154 },
+            { rank: 23, delta: "", name: "SLASH", m: 47, w: 20, d: 6, l: 21, gd: -7, gf: 162, ga: 169, avgGF: 3.45, avgGA: 3.60, avgPts: 1.40, elo: 1908, eloDelta: 0, eloMax: 2266 },
+            { rank: 24, delta: "", name: "Maga49RUS", m: 1, w: 0, d: 0, l: 1, gd: -3, gf: 2, ga: 5, avgGF: 2.00, avgGA: 5.00, avgPts: 0.00, elo: 1900, eloDelta: 0, eloMax: 2000 },
+            { rank: 25, delta: "", name: "Tipoka3HUK", m: 3, w: 0, d: 0, l: 3, gd: -7, gf: 8, ga: 15, avgGF: 2.67, avgGA: 5.00, avgPts: 0.00, elo: 1864, eloDelta: 0, eloMax: 2000 },
+            { rank: 26, delta: "", name: "bomjizpitera", m: 4, w: 1, d: 0, l: 3, gd: -5, gf: 16, ga: 21, avgGF: 4.00, avgGA: 5.25, avgPts: 0.75, elo: 1859, eloDelta: 0, eloMax: 2000 },
+            { rank: 27, delta: "", name: "w", m: 6, w: 1, d: 0, l: 5, gd: -26, gf: 9, ga: 35, avgGF: 1.50, avgGA: 5.83, avgPts: 0.50, elo: 1810, eloDelta: 0, eloMax: 2000 },
+            { rank: 28, delta: "", name: "DTO13", m: 20, w: 8, d: 0, l: 12, gd: -20, gf: 66, ga: 86, avgGF: 3.30, avgGA: 4.30, avgPts: 1.20, elo: 1798, eloDelta: 0, eloMax: 2162 },
+            { rank: 29, delta: "▲7", name: "Foma67", m: 19, w: 4, d: 0, l: 15, gd: -60, gf: 48, ga: 108, avgGF: 2.53, avgGA: 5.68, avgPts: 0.63, elo: 1782, eloDelta: 224, eloMax: 2042 },
+            { rank: 30, delta: "▼1", name: "VELAFROZZY", m: 3, w: 0, d: 0, l: 3, gd: -10, gf: 4, ga: 14, avgGF: 1.33, avgGA: 4.67, avgPts: 0.00, elo: 1782, eloDelta: 0, eloMax: 2000 },
+            { rank: 31, delta: "▼1", name: "Ураган", m: 6, w: 1, d: 0, l: 5, gd: -12, gf: 13, ga: 25, avgGF: 2.17, avgGA: 4.17, avgPts: 0.50, elo: 1742, eloDelta: 0, eloMax: 2031 },
+            { rank: 32, delta: "▼1", name: "IlyaMichali4", m: 3, w: 0, d: 0, l: 3, gd: -21, gf: 2, ga: 23, avgGF: 0.67, avgGA: 7.67, avgPts: 0.00, elo: 1732, eloDelta: 0, eloMax: 2000 },
+            { rank: 33, delta: "▼1", name: "MorozGames", m: 6, w: 2, d: 0, l: 4, gd: -30, gf: 7, ga: 37, avgGF: 1.17, avgGA: 6.17, avgPts: 1.00, elo: 1713, eloDelta: 0, eloMax: 2116 },
+            { rank: 34, delta: "▼1", name: "Balans", m: 4, w: 0, d: 0, l: 4, gd: -29, gf: 8, ga: 37, avgGF: 2.00, avgGA: 9.25, avgPts: 0.00, elo: 1684, eloDelta: 0, eloMax: 2000 },
+            { rank: 35, delta: "▼1", name: "Фотя", m: 6, w: 0, d: 0, l: 6, gd: -24, gf: 9, ga: 33, avgGF: 1.50, avgGA: 5.50, avgPts: 0.00, elo: 1682, eloDelta: 0, eloMax: 2000 },
+            { rank: 36, delta: "▼1", name: "Elizaveta", m: 6, w: 0, d: 0, l: 6, gd: -29, gf: 11, ga: 40, avgGF: 1.83, avgGA: 6.67, avgPts: 0.00, elo: 1677, eloDelta: 0, eloMax: 2000 },
+            { rank: 37, delta: "-", name: "ПсNх 67", m: 4, w: 0, d: 0, l: 4, gd: -23, gf: 6, ga: 29, avgGF: 1.50, avgGA: 7.25, avgPts: 0.00, elo: 1639, eloDelta: -361, eloMax: 2000 }
+        ];
+
+        const FALLBACK_DATA_ACTIVE = [
+            { rank: 1, delta: "▲2", name: "Фермер", m: 53, w: 33, d: 6, l: 14, gd: 69, gf: 256, ga: 187, avgGF: 4.83, avgGA: 3.53, avgPts: 1.98, elo: 2613, eloDelta: 181, eloMax: 2613 },
+            { rank: 2, delta: "▲3", name: "Nukl", m: 88, w: 43, d: 9, l: 36, gd: 44, gf: 380, ga: 336, avgGF: 4.32, avgGA: 3.82, avgPts: 1.57, elo: 2327, eloDelta: 109, eloMax: 2413 },
+            { rank: 3, delta: "▼1", name: "SpeedyGonzales", m: 81, w: 56, d: 2, l: 23, gd: 137, gf: 394, ga: 257, avgGF: 4.86, avgGA: 3.17, avgPts: 2.10, elo: 2321, eloDelta: -194, eloMax: 2552 },
+            { rank: 4, delta: "▲4", name: "Hakari", m: 74, w: 35, d: 2, l: 37, gd: 13, gf: 274, ga: 261, avgGF: 3.70, avgGA: 3.53, avgPts: 1.45, elo: 2253, eloDelta: 224, eloMax: 2332 },
+            { rank: 5, delta: "▲2", name: "SoyRuso28", m: 30, w: 15, d: 1, l: 14, gd: -1, gf: 149, ga: 150, avgGF: 4.97, avgGA: 5.00, avgPts: 1.53, elo: 2033, eloDelta: 0, eloMax: 2194 },
+            { rank: 6, delta: "▲3", name: "Trsfeg", m: 4, w: 1, d: 1, l: 2, gd: 0, gf: 13, ga: 13, avgGF: 3.25, avgGA: 3.25, avgPts: 1.00, elo: 2028, eloDelta: 0, eloMax: 2125 },
+            { rank: 7, delta: "▲3", name: "mosquit51", m: 81, w: 33, d: 1, l: 47, gd: -36, gf: 322, ga: 358, avgGF: 3.98, avgGA: 4.42, avgPts: 1.23, elo: 2013, eloDelta: 16, eloMax: 2244 },
+            { rank: 8, delta: "▼2", name: "Kuvanch", m: 72, w: 31, d: 4, l: 37, gd: -46, gf: 311, ga: 357, avgGF: 4.32, avgGA: 4.96, avgPts: 1.35, elo: 2001, eloDelta: -199, eloMax: 2302 },
+            { rank: 9, delta: "▲2", name: "Dilshod", m: 37, w: 17, d: 1, l: 19, gd: 3, gf: 136, ga: 133, avgGF: 3.68, avgGA: 3.59, avgPts: 1.41, elo: 1996, eloDelta: 0, eloMax: 2269 },
+            { rank: 10, delta: "▲2", name: "Cold_52", m: 22, w: 9, d: 1, l: 12, gd: -1, gf: 73, ga: 74, avgGF: 3.32, avgGA: 3.36, avgPts: 1.27, elo: 1931, eloDelta: 0, eloMax: 2210 },
+            { rank: 11, delta: "▲2", name: "coexxx", m: 58, w: 18, d: 4, l: 36, gd: -83, gf: 198, ga: 281, avgGF: 3.41, avgGA: 4.84, avgPts: 1.00, elo: 1917, eloDelta: 0, eloMax: 2154 },
+            { rank: 12, delta: "▲2", name: "SLASH", m: 47, w: 20, d: 6, l: 21, gd: -7, gf: 162, ga: 169, avgGF: 3.45, avgGA: 3.60, avgPts: 1.40, elo: 1908, eloDelta: 0, eloMax: 2266 },
+            { rank: 13, delta: "-", name: "Foma67", m: 19, w: 4, d: 0, l: 15, gd: -60, gf: 48, ga: 108, avgGF: 2.53, avgGA: 5.68, avgPts: 0.63, elo: 1782, eloDelta: 224, eloMax: 2042 },
+            { rank: 14, delta: "▲2", name: "VELAFROZZY", m: 3, w: 0, d: 0, l: 3, gd: -10, gf: 4, ga: 14, avgGF: 1.33, avgGA: 4.67, avgPts: 0.00, elo: 1782, eloDelta: 0, eloMax: 2000 },
+            { rank: 15, delta: "▲2", name: "IlyaMichali4", m: 3, w: 0, d: 0, l: 3, gd: -21, gf: 2, ga: 23, avgGF: 0.67, avgGA: 7.67, avgPts: 0.00, elo: 1732, eloDelta: 0, eloMax: 2000 },
+            { rank: 16, delta: "-", name: "ПсNх 67", m: 4, w: 0, d: 0, l: 4, gd: -23, gf: 6, ga: 29, avgGF: 1.50, avgGA: 7.25, avgPts: 0.00, elo: 1639, eloDelta: -361, eloMax: 2000 }
+        ];
 
         // ============================================================
         // УТИЛИТЫ
@@ -553,8 +538,8 @@
                     RAW_DATA = FALLBACK_DATA_FULL;
                     setStatus(false, 'Фоллбэк (Полный)');
                 } else {
-                    RAW_DATA = [];
-                    setStatus(false, 'Нет данных (Активные)');
+                    RAW_DATA = FALLBACK_DATA_ACTIVE;
+                    setStatus(false, 'Фоллбэк (Активные)');
                 }
             } else {
                 throw new Error('Не удалось загрузить данные');
