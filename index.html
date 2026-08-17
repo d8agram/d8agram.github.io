@@ -172,11 +172,10 @@
     .chart-wrapper {
         position: relative;
         width: 100%;
-        /* Высота будет задана через JS для адаптивности */
         flex-grow: 1; 
     }
     canvas {
-        display: block; /* Убирает отступы у canvas */
+        display: block;
         width: 100% !important;
     }
     /* Stats */
@@ -225,12 +224,6 @@
         border-radius: 12px;
         border: 1px solid rgba(255, 85, 85, 0.2);
         margin: 20px;
-    }
-    /* Chart.js Overrides */
-    .chartjs-tooltip {
-        background: var(--bg-primary) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 8px !important;
     }
     @media (max-width: 900px) {
         .grid {
@@ -346,19 +339,16 @@
         // КОНФИГУРАЦИЯ
         // ============================================================
         const CONFIG = {
-            // Замени YOUR_SHEET_ID на реальный ID таблицы из URL редактора
             sheetId: '1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U',
             fullSheetName: 'Рейтинг полный',
             activeSheetName: 'Рейтинг активных',
             useFallback: true,
         };
 
-        // Текущее состояние
-        let currentSheetMode = 'full'; // 'full' или 'active'
+        let currentSheetMode = 'full';
         let charts = {};
         let RAW_DATA = [];
 
-        // Фоллбэк данные (для полного рейтинга)
         const FALLBACK_DATA_FULL = [{
             rank: 1, delta: "", name: "ssann", m: 8, w: 8, d: 0, l: 0, gd: 28, gf: 45, ga: 17, avgGF: 5.63, avgGA: 2.13, avgPts: 3.00, elo: 2669, eloDelta: 0, eloMax: 2669
         }, {
@@ -491,10 +481,10 @@
             }).filter(Boolean);
         }
 
-        // ============================================================
-        // ЗАГРУЗКА ДАННЫХ
-        // ============================================================
-        
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
         function getCurrentSheetName() {
             return currentSheetMode === 'full' ? CONFIG.fullSheetName : CONFIG.activeSheetName;
         }
@@ -547,7 +537,6 @@
         }
 
         async function loadData() {
-            // Показываем лоадер
             const loadingEl = document.getElementById('loading');
             const containerEl = document.getElementById('chartsContainer');
             if (loadingEl) loadingEl.style.display = 'block';
@@ -555,14 +544,10 @@
 
             try {
                 if (CONFIG.sheetId && !CONFIG.sheetId.includes('YOUR_SHEET_ID')) {
-                    // Пробуем API
                     RAW_DATA = await loadFromVisualizationAPI(getApiUrl());
-                    
-                    // Если API вернул пустой массив (возможно, лист пустой или нет доступа), пробуем CSV
                     if (RAW_DATA.length === 0) {
                          RAW_DATA = await loadFromCSV(getCsvUrl());
                     }
-                    
                     setStatus(true, `API: ${getCurrentSheetName()}`);
                     return;
                 }
@@ -570,14 +555,11 @@
                 console.warn('API Error:', err);
             }
 
-            // Фоллбэк
             if (CONFIG.useFallback) {
                 if (currentSheetMode === 'full') {
                     RAW_DATA = FALLBACK_DATA_FULL;
                     setStatus(false, 'Фоллбэк (Полный)');
                 } else {
-                    // Для активного режима нет фоллбэка, если API не сработал
-                    // Можно сделать пустым или использовать часть полного
                     RAW_DATA = [];
                     setStatus(false, 'Нет данных (Активные)');
                 }
@@ -612,28 +594,19 @@
             if (dashboard) {
                 dashboard.innerHTML = `<div class="error-msg">❌ Ошибка: ${msg}</div>`;
             } else {
-                // Если DOM еще не загружен или поврежден
                 document.body.innerHTML = `<div style="color: red; text-align: center; padding: 50px;">❌ Ошибка загрузки страницы: ${msg}</div>`;
             }
         }
 
-        // ============================================================
-        // ФИЛЬТРЫ И СОРТИРОВКА
-        // ============================================================
         function getFiltered() {
             const sortMode = document.getElementById('sortMode').value;
-            // Фильтр по мин. матчам убран
-            let data = [...RAW_DATA]; // Копия, чтобы не менять оригинал
-            
-            // Убираем игроков с 0 матчей из сортировок, если нужно, но обычно они остаются внизу
-            // if needed: data = data.filter(p => p.m > 0);
+            let data = [...RAW_DATA];
 
             switch (sortMode) {
                 case 'elo':
                     data.sort((a, b) => b.elo - a.elo);
                     break;
                 case 'winrate':
-                    // Защита от деления на ноль
                     data.sort((a, b) => {
                         const wrA = a.m > 0 ? a.w / a.m : 0;
                         const wrB = b.m > 0 ? b.w / b.m : 0;
@@ -679,13 +652,9 @@
         const GRID_COMMON = { color: 'rgba(255,255,255,0.04)' };
         const TICKS_COMMON = { color: '#555' };
 
-        // ============================================================
-        // ГРАФИКИ
-        // ============================================================
         function buildSummary(data) {
             const summaryStatsEl = document.getElementById('summaryStats');
             if (!summaryStatsEl) return;
-            
             if (!data || data.length === 0) {
                 summaryStatsEl.innerHTML = '<div class="stat-box"><div class="val">-</div><div class="lbl">Нет данных</div></div>';
                 return;
@@ -711,7 +680,6 @@
             const wrapper = document.getElementById('eloChartWrapper');
             if (!canvas || !wrapper) return;
 
-            // Адаптивная высота: 30px на игрока, минимум 300px
             const height = Math.max(300, data.length * 30);
             wrapper.style.height = `${height}px`;
 
@@ -724,12 +692,12 @@
                         backgroundColor: data.map(p => eloColor(p.elo)),
                         borderRadius: 6,
                         borderSkipped: false,
-                        barThickness: 12, // Тоньше
+                        barThickness: 12,
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false, // Важно для адаптивной высоты
+                    maintainAspectRatio: false,
                     indexAxis: 'y',
                     plugins: {
                         legend: { display: false },
@@ -751,16 +719,13 @@
         function buildEloVsMaxChart(data) {
             destroyChart('eloVsMax');
             if(data.length === 0) return;
-            
             const canvas = document.getElementById('eloVsMaxChart');
             const wrapper = document.getElementById('eloVsMaxChartWrapper');
             if (!canvas || !wrapper) return;
 
-            // Адаптивная высота: 30px на игрока, минимум 300px
             const height = Math.max(300, data.length * 30);
             wrapper.style.height = `${height}px`;
 
-            // Используем группированные бары для наглядного сравнения
             charts.eloVsMax = new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -769,13 +734,13 @@
                         {
                             label: 'Макс. Эло',
                             data: data.map(p => p.eloMax),
-                            backgroundColor: 'rgba(255,230,101,0.2)', // Полупрозрачный фон
+                            backgroundColor: 'rgba(255,230,101,0.2)',
                             borderColor: 'rgba(255,230,101,0.5)',
                             borderWidth: 1,
                             borderRadius: 4,
                             borderSkipped: false,
-                            barThickness: 8, // Очень тонкий
-                            order: 2 // Рисуется первым (сзади)
+                            barThickness: 8,
+                            order: 2
                         },
                         {
                             label: 'Текущий',
@@ -783,8 +748,8 @@
                             backgroundColor: data.map(p => eloColor(p.elo)),
                             borderRadius: 4,
                             borderSkipped: false,
-                            barThickness: 8, // Совпадает с макс
-                            order: 1 // Рисуется вторым (спереди)
+                            barThickness: 8,
+                            order: 1
                         }
                     ]
                 },
@@ -793,10 +758,7 @@
                     maintainAspectRatio: false,
                     indexAxis: 'y',
                     plugins: {
-                        legend: { 
-                            labels: { color: '#888' },
-                            position: 'top'
-                        },
+                        legend: { labels: { color: '#888' }, position: 'top' },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
@@ -810,12 +772,7 @@
                     },
                     scales: {
                         x: { grid: GRID_COMMON, ticks: TICKS_COMMON, min: 1500 },
-                        y: { 
-                            grid: { display: false }, 
-                            ticks: { color: '#aaa', font: { weight: 600, size: 11 } },
-                            // Группировка баров
-                            stacked: false 
-                        }
+                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600, size: 11 } } }
                     }
                 }
             });
@@ -823,21 +780,19 @@
 
         function buildWinrateChart(data) {
             destroyChart('winrate');
-            
-            // Фильтруем тех, у кого 0 побед (и минимум 1 сыгранный матч, чтобы избежать деления на ноль)
             const activeWinners = data.filter(p => p.w > 0 && p.m > 0);
-            
             if(activeWinners.length === 0) return;
             
             const canvas = document.getElementById('winrateChart');
             const wrapper = document.getElementById('winrateChartWrapper');
             if (!canvas || !wrapper) return;
 
-            // Адаптивная высота
             const height = Math.max(300, activeWinners.length * 30);
             wrapper.style.height = `${height}px`;
 
+            const isMob = isMobile();
             const wr = activeWinners.map(p => (p.w / p.m) * 100);
+            
             charts.winrate = new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -853,6 +808,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    indexAxis: isMob ? 'y' : 'x',
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -862,7 +818,10 @@
                             }
                         }
                     },
-                    scales: {
+                    scales: isMob ? {
+                        x: { grid: GRID_COMMON, ticks: { ...TICKS_COMMON, callback: v => v + '%' }, max: 100 },
+                        y: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
+                    } : {
                         x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
                         y: { grid: GRID_COMMON, ticks: { ...TICKS_COMMON, callback: v => v + '%' }, max: 100 }
                     }
@@ -879,6 +838,8 @@
 
             const height = Math.max(300, data.length * 30);
             wrapper.style.height = `${height}px`;
+
+            const isMob = isMobile();
 
             charts.goals = new Chart(canvas, {
                 type: 'bar',
@@ -903,8 +864,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    indexAxis: isMob ? 'y' : 'x',
                     plugins: { legend: { labels: { color: '#888' } }, tooltip: TOOLTIP_CONFIG },
-                    scales: {
+                    scales: isMob ? {
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON },
+                        y: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
+                    } : {
                         x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
                         y: { grid: GRID_COMMON, ticks: TICKS_COMMON }
                     }
@@ -955,12 +920,12 @@
             if (!canvas || !wrapper) return;
 
             const withDelta = data.filter(p => p.eloDelta !== 0).sort((a, b) => b.eloDelta - a.eloDelta);
-            if(withDelta.length === 0) {
-                // Если нет дельт, можно показать пустой график или сообщение, но ChartJS лучше создать пустым
-            }
+            if(withDelta.length === 0) return;
             
             const height = Math.max(300, withDelta.length * 30);
             wrapper.style.height = `${height}px`;
+
+            const isMob = isMobile();
 
             charts.eloDelta = new Chart(canvas, {
                 type: 'bar',
@@ -976,8 +941,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    indexAxis: isMob ? 'y' : 'x',
                     plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
-                    scales: {
+                    scales: isMob ? {
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON },
+                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600 } } }
+                    } : {
                         x: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600 } } },
                         y: { grid: GRID_COMMON, ticks: TICKS_COMMON }
                     }
@@ -992,7 +961,6 @@
             const wrapper = document.getElementById('scatterChartWrapper');
             if (!canvas || !wrapper) return;
 
-            // Для scatter chart фиксированная высота, так как количество точек не определяет высоту оси
             wrapper.style.height = '400px';
 
             const scatterData = data.map(p => ({ x: p.avgGF, y: p.avgGA, label: p.name, elo: p.elo, m: p.m }));
@@ -1040,10 +1008,7 @@
 
         function buildAvgPointsChart(data) {
             destroyChart('avgPoints');
-            
-            // Фильтруем тех, у кого 0 очков (и минимум 1 сыгранный матч)
             const activePoints = data.filter(p => p.avgPts > 0 && p.m > 0);
-            
             if(activePoints.length === 0) return;
 
             const canvas = document.getElementById('avgPointsChart');
@@ -1052,6 +1017,8 @@
 
             const height = Math.max(300, activePoints.length * 30);
             wrapper.style.height = `${height}px`;
+
+            const isMob = isMobile();
 
             charts.avgPoints = new Chart(canvas, {
                 type: 'bar',
@@ -1068,8 +1035,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    indexAxis: isMob ? 'y' : 'x',
                     plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
-                    scales: {
+                    scales: isMob ? {
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.2 },
+                        y: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
+                    } : {
                         x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
                         y: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.2 }
                     }
@@ -1084,9 +1055,6 @@
             if (!canvas || !wrapper) return;
 
             wrapper.style.height = '300px';
-
-            // Используем RAW_DATA для общего распределения, а не отфильтрованного, 
-            // чтобы статистика была по всей выборке режима
             if(RAW_DATA.length === 0) return;
             
             const bins = [
@@ -1113,10 +1081,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#888', padding: 14, font: { size: 11 } }
-                        },
+                        legend: { position: 'bottom', labels: { color: '#888', padding: 14, font: { size: 11 } } },
                         tooltip: TOOLTIP_CONFIG
                     },
                     cutout: '55%',
@@ -1162,10 +1127,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#888', padding: 12, font: { size: 11 } }
-                        },
+                        legend: { position: 'bottom', labels: { color: '#888', padding: 12, font: { size: 11 } } },
                         tooltip: TOOLTIP_CONFIG
                     },
                     scales: {
@@ -1197,7 +1159,15 @@
             buildRadarChart(data);
         }
 
-        // Запуск
+        // Перестройка при изменении ширины экрана
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                rebuildAll();
+            }, 300);
+        });
+
         loadData().then(() => {
             const loadingEl = document.getElementById('loading');
             const containerEl = document.getElementById('chartsContainer');
