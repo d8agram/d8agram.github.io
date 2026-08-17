@@ -509,8 +509,10 @@
 
         async function loadData() {
             // Показываем лоадер
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('chartsContainer').style.display = 'none';
+            const loadingEl = document.getElementById('loading');
+            const containerEl = document.getElementById('chartsContainer');
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (containerEl) containerEl.style.display = 'none';
 
             try {
                 if (CONFIG.sheetId && !CONFIG.sheetId.includes('YOUR_SHEET_ID')) {
@@ -549,8 +551,10 @@
             const mode = document.getElementById('sheetMode').value;
             currentSheetMode = mode;
             loadData().then(() => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('chartsContainer').style.display = 'grid';
+                const loadingEl = document.getElementById('loading');
+                const containerEl = document.getElementById('chartsContainer');
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (containerEl) containerEl.style.display = 'grid';
                 rebuildAll();
             }).catch(err => {
                 showError(err.message);
@@ -560,12 +564,18 @@
         function setStatus(online, source) {
             const dot = document.getElementById('statusDot');
             const txt = document.getElementById('statusText');
-            dot.className = online ? 'status-dot' : 'status-dot offline';
-            txt.textContent = `${online ? '🟢' : '🟡'} ${source} • ${new Date().toLocaleTimeString('ru-RU')}`;
+            if (dot) dot.className = online ? 'status-dot' : 'status-dot offline';
+            if (txt) txt.textContent = `${online ? '🟢' : '🟡'} ${source} • ${new Date().toLocaleTimeString('ru-RU')}`;
         }
 
         function showError(msg) {
-            document.getElementById('dashboard').innerHTML = `<div class="error-msg">❌ Ошибка: ${msg}</div>`;
+            const dashboard = document.getElementById('dashboard');
+            if (dashboard) {
+                dashboard.innerHTML = `<div class="error-msg">❌ Ошибка: ${msg}</div>`;
+            } else {
+                // Если DOM еще не загружен или поврежден
+                document.body.innerHTML = `<div style="color: red; text-align: center; padding: 50px;">❌ Ошибка загрузки страницы: ${msg}</div>`;
+            }
         }
 
         // ============================================================
@@ -634,8 +644,11 @@
         // ГРАФИКИ
         // ============================================================
         function buildSummary(data) {
+            const summaryStatsEl = document.getElementById('summaryStats');
+            if (!summaryStatsEl) return;
+            
             if (!data || data.length === 0) {
-                document.getElementById('summaryStats').innerHTML = '<div class="stat-box"><div class="val">-</div><div class="lbl">Нет данных</div></div>';
+                summaryStatsEl.innerHTML = '<div class="stat-box"><div class="val">-</div><div class="lbl">Нет данных</div></div>';
                 return;
             }
             const totalGoals = data.reduce((s, p) => s + p.gf, 0);
@@ -643,7 +656,7 @@
             const avgElo = Math.round(data.reduce((s, p) => s + p.elo, 0) / data.length);
             const bestAttack = [...data].sort((a, b) => b.avgGF - a.avgGF)[0];
             const bestDefence = [...data].sort((a, b) => a.avgGA - b.avgGA)[0];
-            document.getElementById('summaryStats').innerHTML = `
+            summaryStatsEl.innerHTML = `
                 <div class="stat-box"><div class="val">${data.length}</div><div class="lbl">Игроков</div></div>
                 <div class="stat-box"><div class="val">${totalMatches}</div><div class="lbl">Матчей</div></div>
                 <div class="stat-box"><div class="val">${totalGoals}</div><div class="lbl">Голов</div></div>
@@ -655,7 +668,10 @@
         function buildEloChart(data) {
             destroyChart('elo');
             if(data.length === 0) return;
-            charts.elo = new Chart(document.getElementById('eloChart'), {
+            const canvas = document.getElementById('eloChart');
+            if (!canvas) return;
+            
+            charts.elo = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: data.map(p => p.name),
@@ -687,38 +703,49 @@
             });
         }
 
-        function buildEloVsMax(data) {
+        function buildEloVsMaxChart(data) {
             destroyChart('eloVsMax');
             if(data.length === 0) return;
-            charts.eloVsMax = new Chart(document.getElementById('eloVsMaxChart'), {
+            
+            const canvas = document.getElementById('eloVsMaxChart');
+            if (!canvas) return;
+
+            // Используем группированные бары для наглядного сравнения
+            charts.eloVsMax = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: data.map(p => p.name),
-                    datasets: [{
-                        label: 'Макс. Эло',
-                        data: data.map(p => p.eloMax),
-                        backgroundColor: 'rgba(255,230,101,0.15)',
-                        borderColor: 'rgba(255,230,101,0.5)',
-                        borderWidth: 1,
-                        borderRadius: 6,
-                        borderSkipped: false,
-                        barThickness: 14
-                    }, {
-                        label: 'Текущий',
-                        data: data.map(p => p.elo),
-                        backgroundColor: data.map(p => eloColor(p.elo) + 'CC'),
-                        borderColor: data.map(p => eloColor(p.elo)),
-                        borderWidth: 1,
-                        borderRadius: 6,
-                        borderSkipped: false,
-                        barThickness: 14
-                    }]
+                    datasets: [
+                        {
+                            label: 'Текущий',
+                            data: data.map(p => p.elo),
+                            backgroundColor: data.map(p => eloColor(p.elo)),
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barThickness: 10,
+                            order: 1 // Рисуется первым (сзади)
+                        },
+                        {
+                            label: 'Макс. Эло',
+                            data: data.map(p => p.eloMax),
+                            backgroundColor: 'rgba(255,230,101,0.2)',
+                            borderColor: 'rgba(255,230,101,0.6)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barThickness: 10,
+                            order: 2 // Рисуется вторым (спереди)
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     indexAxis: 'y',
                     plugins: {
-                        legend: { labels: { color: '#888' } },
+                        legend: { 
+                            labels: { color: '#888' },
+                            position: 'top'
+                        },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
@@ -732,7 +759,12 @@
                     },
                     scales: {
                         x: { grid: GRID_COMMON, ticks: TICKS_COMMON, min: 1500 },
-                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600, size: 11 } } }
+                        y: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#aaa', font: { weight: 600, size: 11 } },
+                            // Группировка баров
+                            stacked: false 
+                        }
                     }
                 }
             });
@@ -741,8 +773,11 @@
         function buildWinrateChart(data) {
             destroyChart('winrate');
             if(data.length === 0) return;
+            const canvas = document.getElementById('winrateChart');
+            if (!canvas) return;
+
             const wr = data.map(p => p.m > 0 ? (p.w / p.m) * 100 : 0);
-            charts.winrate = new Chart(document.getElementById('winrateChart'), {
+            charts.winrate = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: data.map(p => p.name),
@@ -775,7 +810,10 @@
         function buildGoalsChart(data) {
             destroyChart('goals');
             if(data.length === 0) return;
-            charts.goals = new Chart(document.getElementById('goalsChart'), {
+            const canvas = document.getElementById('goalsChart');
+            if (!canvas) return;
+
+            charts.goals = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: data.map(p => p.name),
@@ -807,8 +845,11 @@
         function buildGoalDiffChart(data) {
             destroyChart('goalDiff');
             if(data.length === 0) return;
+            const canvas = document.getElementById('goalDiffChart');
+            if (!canvas) return;
+
             const sorted = [...data].sort((a, b) => b.gd - a.gd);
-            charts.goalDiff = new Chart(document.getElementById('goalDiffChart'), {
+            charts.goalDiff = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: sorted.map(p => p.name),
@@ -834,11 +875,14 @@
 
         function buildEloDeltaChart(data) {
             destroyChart('eloDelta');
+            const canvas = document.getElementById('eloDeltaChart');
+            if (!canvas) return;
+
             const withDelta = data.filter(p => p.eloDelta !== 0).sort((a, b) => b.eloDelta - a.eloDelta);
             if(withDelta.length === 0) {
                 // Если нет дельт, можно показать пустой график или сообщение, но ChartJS лучше создать пустым
             }
-            charts.eloDelta = new Chart(document.getElementById('eloDeltaChart'), {
+            charts.eloDelta = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: withDelta.map(p => p.name),
@@ -863,8 +907,11 @@
         function buildScatterChart(data) {
             destroyChart('scatter');
             if(data.length === 0) return;
+            const canvas = document.getElementById('scatterChart');
+            if (!canvas) return;
+
             const scatterData = data.map(p => ({ x: p.avgGF, y: p.avgGA, label: p.name, elo: p.elo, m: p.m }));
-            charts.scatter = new Chart(document.getElementById('scatterChart'), {
+            charts.scatter = new Chart(canvas, {
                 type: 'scatter',
                 data: {
                     datasets: [{
@@ -908,7 +955,10 @@
         function buildAvgPointsChart(data) {
             destroyChart('avgPoints');
             if(data.length === 0) return;
-            charts.avgPoints = new Chart(document.getElementById('avgPointsChart'), {
+            const canvas = document.getElementById('avgPointsChart');
+            if (!canvas) return;
+
+            charts.avgPoints = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: data.map(p => p.name),
@@ -932,6 +982,9 @@
 
         function buildMatchesDistChart(data) {
             destroyChart('matchesDist');
+            const canvas = document.getElementById('matchesDistChart');
+            if (!canvas) return;
+
             // Используем RAW_DATA для общего распределения, а не отфильтрованного, 
             // чтобы статистика была по всей выборке режима
             if(RAW_DATA.length === 0) return;
@@ -944,7 +997,7 @@
                 { label: '51+', min: 51, max: 999 },
             ];
             const counts = bins.map(b => RAW_DATA.filter(p => p.m >= b.min && p.m <= b.max).length);
-            charts.matchesDist = new Chart(document.getElementById('matchesDistChart'), {
+            charts.matchesDist = new Chart(canvas, {
                 type: 'doughnut',
                 data: {
                     labels: bins.map(b => b.label),
@@ -973,6 +1026,9 @@
         function buildRadarChart(data) {
             destroyChart('radar');
             if(data.length === 0) return;
+            const canvas = document.getElementById('radarChart');
+            if (!canvas) return;
+
             const top10 = [...data].sort((a, b) => b.elo - a.elo).slice(0, 10);
             const maxElo = Math.max(...RAW_DATA.map(p => p.elo));
             const maxAvgGF = Math.max(...RAW_DATA.map(p => p.avgGF));
@@ -992,7 +1048,7 @@
                 pointBackgroundColor: colors[i],
                 pointRadius: 3,
             }));
-            charts.radar = new Chart(document.getElementById('radarChart'), {
+            charts.radar = new Chart(canvas, {
                 type: 'radar',
                 data: {
                     labels: ['Эло', '% Побед', 'Атака', 'Оборона', 'Ср. Очки'],
@@ -1025,7 +1081,7 @@
             const data = getFiltered();
             buildSummary(data);
             buildEloChart(data);
-            buildEloVsMax(data);
+            buildEloVsMaxChart(data);
             buildWinrateChart(data);
             buildGoalsChart(data);
             buildGoalDiffChart(data);
@@ -1038,8 +1094,10 @@
 
         // Запуск
         loadData().then(() => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('chartsContainer').style.display = 'grid';
+            const loadingEl = document.getElementById('loading');
+            const containerEl = document.getElementById('chartsContainer');
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (containerEl) containerEl.style.display = 'grid';
             rebuildAll();
         }).catch(err => {
             showError(err.message);
