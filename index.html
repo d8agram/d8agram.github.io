@@ -33,10 +33,9 @@
         min-height: 100vh;
         overflow-x: hidden;
     }
-    /* Header */
     .header {
         text-align: center;
-        padding: 48px 20px 32px;
+        padding: 40px 20px 28px;
         background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
         border-bottom: 1px solid var(--border);
         position: relative;
@@ -53,7 +52,7 @@
         border-radius: 2px;
     }
     .header h1 {
-        font-size: 2.8rem;
+        font-size: 2.6rem;
         font-weight: 900;
         color: var(--accent);
         letter-spacing: -2px;
@@ -89,10 +88,9 @@
         0%, 100% { opacity: 1; }
         50% { opacity: 0.4; }
     }
-    /* Filters */
     .filters {
         text-align: center;
-        padding: 20px;
+        padding: 18px;
         background: var(--bg-secondary);
         border-bottom: 1px solid var(--border);
         display: flex;
@@ -121,31 +119,29 @@
         transition: border-color 0.2s;
         outline: none;
     }
-    .filters select:hover {
+    .filters select:hover, .filters select:focus {
         border-color: var(--accent);
     }
     .filters select:focus {
-        border-color: var(--accent);
         box-shadow: 0 0 0 2px var(--accent-dim);
     }
-    /* Grid */
     .grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 24px;
-        padding: 32px 24px;
-        max-width: 1600px;
+        gap: 20px;
+        padding: 24px;
+        max-width: 1400px;
         margin: 0 auto;
     }
-    /* Cards */
     .card {
         background: var(--bg-card);
-        border-radius: 16px;
-        padding: 28px;
+        border-radius: 14px;
+        padding: 22px;
         border: 1px solid var(--border);
         transition: border-color 0.3s, transform 0.2s;
         display: flex;
         flex-direction: column;
+        min-height: 0;
     }
     .card:hover {
         border-color: rgba(255, 230, 101, 0.3);
@@ -155,9 +151,9 @@
         grid-column: 1 / -1;
     }
     .card h2 {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
         color: var(--accent);
         display: flex;
         align-items: center;
@@ -167,51 +163,48 @@
         flex-shrink: 0;
     }
     .card h2 .icon {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
     .chart-wrapper {
         position: relative;
         width: 100%;
-        flex-grow: 1; 
+        flex-grow: 1;
+        min-height: 0;
     }
     canvas {
         display: block;
         width: 100% !important;
     }
-    /* Stats */
     .stat-row {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 8px;
+        gap: 12px;
     }
     .stat-box {
         background: var(--bg-secondary);
-        padding: 16px 24px;
-        border-radius: 12px;
+        padding: 14px 20px;
+        border-radius: 10px;
         text-align: center;
-        min-width: 130px;
+        min-width: 120px;
         border: 1px solid var(--border);
         flex: 1;
     }
     .stat-box .val {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: 900;
         color: var(--accent);
     }
     .stat-box .lbl {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: var(--text-secondary);
         margin-top: 4px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    /* Loading & Error */
-    .loading,
-    .error-msg {
+    .loading, .error-msg {
         text-align: center;
-        padding: 80px 20px;
+        padding: 60px 20px;
         color: var(--text-secondary);
         font-size: 1.1rem;
     }
@@ -228,11 +221,11 @@
     @media (max-width: 900px) {
         .grid {
             grid-template-columns: 1fr;
-            padding: 16px;
-            gap: 16px;
+            padding: 14px;
+            gap: 14px;
         }
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
         }
         .filters {
             flex-direction: column;
@@ -291,6 +284,12 @@
                 </div>
             </div>
             <div class="card">
+                <h2><span class="icon">📉</span> Средние очки за матч</h2> 
+                <div class="chart-wrapper" id="avgPointsChartWrapper">
+                    <canvas id="avgPointsChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
                 <h2><span class="icon">⚽</span> Средние голы: Забито vs Пропущено</h2> 
                 <div class="chart-wrapper" id="goalsChartWrapper">
                     <canvas id="goalsChart"></canvas>
@@ -308,22 +307,16 @@
                     <canvas id="eloDeltaChart"></canvas>
                 </div>
             </div>
-            <div class="card full-width">
-                <h2><span class="icon">⚔️</span> Атака vs Оборона</h2> 
-                <div class="chart-wrapper" id="scatterChartWrapper">
-                    <canvas id="scatterChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <h2><span class="icon">📉</span> Средние очки за матч</h2> 
-                <div class="chart-wrapper" id="avgPointsChartWrapper">
-                    <canvas id="avgPointsChart"></canvas>
-                </div>
-            </div>
             <div class="card">
                 <h2><span class="icon">🎲</span> Распределение по матчам</h2> 
                 <div class="chart-wrapper" id="matchesDistChartWrapper">
                     <canvas id="matchesDistChart"></canvas>
+                </div>
+            </div>
+            <div class="card full-width">
+                <h2><span class="icon">⚔️</span> Атака vs Оборона</h2> 
+                <div class="chart-wrapper" id="scatterChartWrapper">
+                    <canvas id="scatterChart"></canvas>
                 </div>
             </div>
             <div class="card full-width">
@@ -673,6 +666,20 @@
                 <div class="stat-box"><div class="val">${bestDefence?.name || '-'}</div><div class="lbl">Лучшая оборона</div></div>`;
         }
 
+        function setAdaptiveHeight(wrapper, count, opts = {}) {
+            const { mult = 18, min = 260, max = 520 } = opts;
+            const h = Math.max(min, count * mult);
+            wrapper.style.height = `${h}px`;
+            wrapper.style.maxHeight = `${max}px`;
+            wrapper.style.overflowY = 'auto';
+        }
+
+        function setFixedHeight(wrapper, h) {
+            wrapper.style.height = `${h}px`;
+            wrapper.style.maxHeight = '';
+            wrapper.style.overflowY = '';
+        }
+
         function buildEloChart(data) {
             destroyChart('elo');
             if(data.length === 0) return;
@@ -680,8 +687,7 @@
             const wrapper = document.getElementById('eloChartWrapper');
             if (!canvas || !wrapper) return;
 
-            const height = Math.max(300, data.length * 30);
-            wrapper.style.height = `${height}px`;
+            setAdaptiveHeight(wrapper, data.length, { mult: 18, min: 280, max: 520 });
 
             charts.elo = new Chart(canvas, {
                 type: 'bar',
@@ -690,9 +696,9 @@
                     datasets: [{
                         data: data.map(p => p.elo),
                         backgroundColor: data.map(p => eloColor(p.elo)),
-                        borderRadius: 6,
+                        borderRadius: 4,
                         borderSkipped: false,
-                        barThickness: 12,
+                        barThickness: 8,
                     }]
                 },
                 options: {
@@ -723,8 +729,7 @@
             const wrapper = document.getElementById('eloVsMaxChartWrapper');
             if (!canvas || !wrapper) return;
 
-            const height = Math.max(300, data.length * 30);
-            wrapper.style.height = `${height}px`;
+            setAdaptiveHeight(wrapper, data.length, { mult: 18, min: 280, max: 520 });
 
             charts.eloVsMax = new Chart(canvas, {
                 type: 'bar',
@@ -737,18 +742,18 @@
                             backgroundColor: 'rgba(255,230,101,0.2)',
                             borderColor: 'rgba(255,230,101,0.5)',
                             borderWidth: 1,
-                            borderRadius: 4,
+                            borderRadius: 3,
                             borderSkipped: false,
-                            barThickness: 8,
+                            barThickness: 6,
                             order: 2
                         },
                         {
                             label: 'Текущий',
                             data: data.map(p => p.elo),
                             backgroundColor: data.map(p => eloColor(p.elo)),
-                            borderRadius: 4,
+                            borderRadius: 3,
                             borderSkipped: false,
-                            barThickness: 8,
+                            barThickness: 6,
                             order: 1
                         }
                     ]
@@ -787,10 +792,13 @@
             const wrapper = document.getElementById('winrateChartWrapper');
             if (!canvas || !wrapper) return;
 
-            const height = Math.max(300, activeWinners.length * 30);
-            wrapper.style.height = `${height}px`;
-
             const isMob = isMobile();
+            if (isMob) {
+                setAdaptiveHeight(wrapper, activeWinners.length, { mult: 18, min: 280, max: 520 });
+            } else {
+                setFixedHeight(wrapper, 340);
+            }
+
             const wr = activeWinners.map(p => (p.w / p.m) * 100);
             
             charts.winrate = new Chart(canvas, {
@@ -800,9 +808,9 @@
                     datasets: [{
                         data: wr,
                         backgroundColor: wr.map(v => v >= 60 ? '#50fa7b' : v >= 40 ? '#ffe665' : '#ff5555'),
-                        borderRadius: 4,
+                        borderRadius: 3,
                         borderSkipped: false,
-                        barThickness: 12
+                        barThickness: 6
                     }]
                 },
                 options: {
@@ -836,10 +844,7 @@
             const wrapper = document.getElementById('goalsChartWrapper');
             if (!canvas || !wrapper) return;
 
-            const height = Math.max(300, data.length * 30);
-            wrapper.style.height = `${height}px`;
-
-            const isMob = isMobile();
+            setAdaptiveHeight(wrapper, data.length, { mult: 18, min: 280, max: 520 });
 
             charts.goals = new Chart(canvas, {
                 type: 'bar',
@@ -849,29 +854,26 @@
                         label: 'Забито (Ср.)',
                         data: data.map(p => p.avgGF),
                         backgroundColor: 'rgba(80,250,123,0.7)',
-                        borderRadius: 4,
+                        borderRadius: 3,
                         borderSkipped: false,
-                        barThickness: 10
+                        barThickness: 8
                     }, {
                         label: 'Пропущено (Ср.)',
                         data: data.map(p => p.avgGA),
                         backgroundColor: 'rgba(255,85,85,0.7)',
-                        borderRadius: 4,
+                        borderRadius: 3,
                         borderSkipped: false,
-                        barThickness: 10
+                        barThickness: 8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    indexAxis: isMob ? 'y' : 'x',
+                    indexAxis: 'y',
                     plugins: { legend: { labels: { color: '#888' } }, tooltip: TOOLTIP_CONFIG },
-                    scales: isMob ? {
+                    scales: {
                         x: { grid: GRID_COMMON, ticks: TICKS_COMMON },
                         y: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
-                    } : {
-                        x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
-                        y: { grid: GRID_COMMON, ticks: TICKS_COMMON }
                     }
                 }
             });
@@ -885,8 +887,7 @@
             if (!canvas || !wrapper) return;
 
             const sorted = [...data].sort((a, b) => b.gd - a.gd);
-            const height = Math.max(300, sorted.length * 30);
-            wrapper.style.height = `${height}px`;
+            setAdaptiveHeight(wrapper, sorted.length, { mult: 18, min: 280, max: 520 });
 
             charts.goalDiff = new Chart(canvas, {
                 type: 'bar',
@@ -895,9 +896,9 @@
                     datasets: [{
                         data: sorted.map(p => p.gd),
                         backgroundColor: sorted.map(p => p.gd >= 0 ? 'rgba(80,250,123,0.7)' : 'rgba(255,85,85,0.7)'),
-                        borderRadius: 4,
+                        borderRadius: 3,
                         borderSkipped: false,
-                        barThickness: 12,
+                        barThickness: 8,
                     }]
                 },
                 options: {
@@ -922,10 +923,12 @@
             const withDelta = data.filter(p => p.eloDelta !== 0).sort((a, b) => b.eloDelta - a.eloDelta);
             if(withDelta.length === 0) return;
             
-            const height = Math.max(300, withDelta.length * 30);
-            wrapper.style.height = `${height}px`;
-
             const isMob = isMobile();
+            if (isMob) {
+                setAdaptiveHeight(wrapper, withDelta.length, { mult: 18, min: 280, max: 520 });
+            } else {
+                setFixedHeight(wrapper, 340);
+            }
 
             charts.eloDelta = new Chart(canvas, {
                 type: 'bar',
@@ -934,8 +937,9 @@
                     datasets: [{
                         data: withDelta.map(p => p.eloDelta),
                         backgroundColor: withDelta.map(p => p.eloDelta > 0 ? 'rgba(80,250,123,0.8)' : 'rgba(255,85,85,0.8)'),
-                        borderRadius: 4,
+                        borderRadius: 3,
                         borderSkipped: false,
+                        barThickness: 6
                     }]
                 },
                 options: {
@@ -961,7 +965,7 @@
             const wrapper = document.getElementById('scatterChartWrapper');
             if (!canvas || !wrapper) return;
 
-            wrapper.style.height = '400px';
+            setFixedHeight(wrapper, 380);
 
             const scatterData = data.map(p => ({ x: p.avgGF, y: p.avgGA, label: p.name, elo: p.elo, m: p.m }));
             charts.scatter = new Chart(canvas, {
@@ -1015,10 +1019,12 @@
             const wrapper = document.getElementById('avgPointsChartWrapper');
             if (!canvas || !wrapper) return;
 
-            const height = Math.max(300, activePoints.length * 30);
-            wrapper.style.height = `${height}px`;
-
             const isMob = isMobile();
+            if (isMob) {
+                setAdaptiveHeight(wrapper, activePoints.length, { mult: 18, min: 280, max: 520 });
+            } else {
+                setFixedHeight(wrapper, 340);
+            }
 
             charts.avgPoints = new Chart(canvas, {
                 type: 'bar',
@@ -1027,9 +1033,9 @@
                     datasets: [{
                         data: activePoints.map(p => p.avgPts),
                         backgroundColor: activePoints.map(p => p.avgPts >= 2 ? '#50fa7b' : p.avgPts >= 1.4 ? '#ffe665' : '#ff5555'),
-                        borderRadius: 4,
+                        borderRadius: 3,
                         borderSkipped: false,
-                        barThickness: 12
+                        barThickness: 6
                     }]
                 },
                 options: {
@@ -1054,7 +1060,7 @@
             const wrapper = document.getElementById('matchesDistChartWrapper');
             if (!canvas || !wrapper) return;
 
-            wrapper.style.height = '300px';
+            setFixedHeight(wrapper, 340);
             if(RAW_DATA.length === 0) return;
             
             const bins = [
@@ -1096,7 +1102,7 @@
             const wrapper = document.getElementById('radarChartWrapper');
             if (!canvas || !wrapper) return;
 
-            wrapper.style.height = '400px';
+            setFixedHeight(wrapper, 400);
 
             const top10 = [...data].sort((a, b) => b.elo - a.elo).slice(0, 10);
             const maxElo = Math.max(...RAW_DATA.map(p => p.elo));
@@ -1159,7 +1165,6 @@
             buildRadarChart(data);
         }
 
-        // Перестройка при изменении ширины экрана
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
