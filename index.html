@@ -95,12 +95,19 @@
         padding: 20px;
         background: var(--bg-secondary);
         border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
     }
     .filters label {
-        margin: 0 12px;
+        margin: 0;
         font-size: 0.85rem;
         color: var(--text-secondary);
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     .filters select {
         background: var(--bg-primary);
@@ -229,10 +236,6 @@
             flex-direction: column;
             gap: 10px;
         }
-        .filters label {
-            display: block;
-            margin: 8px 0;
-        }
     }
     </style>
 </head>
@@ -245,15 +248,14 @@
         </div>
     </div>
     <div class="filters"> 
-        <label>Мин. матчей: <select id="minMatches" onchange="rebuildAll()">
-                <option value="1">Все</option>
-                <option value="4">4+</option>
-                <option value="10" selected>10+</option>
-                <option value="20">20+</option>
-                <option value="50">50+</option>
+        <label>Режим: 
+            <select id="sheetMode" onchange="switchSheetMode()">
+                <option value="full" selected>Полный рейтинг</option>
+                <option value="active">Последние 3 турнира</option>
             </select> 
         </label> 
-        <label>Сортировка: <select id="sortMode" onchange="rebuildAll()">
+        <label>Сортировка: 
+            <select id="sortMode" onchange="rebuildAll()">
                 <option value="elo" selected>По Эло</option>
                 <option value="winrate">По % побед</option>
                 <option value="avggz">По Ср.ГЗ</option>
@@ -305,13 +307,20 @@
         // КОНФИГУРАЦИЯ
         // ============================================================
         const CONFIG = {
-            apiUrl: 'https://docs.google.com/spreadsheets/d/1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U/gviz/tq?tqx=out:json&sheet=Рейтинг+полный',
-            csvUrl: 'https://docs.google.com/spreadsheets/d/1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U/gviz/tq?tqx=out:csv&sheet=Рейтинг+полный',
+            // Замени YOUR_SHEET_ID на реальный ID таблицы из URL редактора
+            sheetId: '1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U',
+            fullSheetName: 'Рейтинг полный',
+            activeSheetName: 'Рейтинг активных',
             useFallback: true,
         };
 
-        // Фоллбэк данные
-        const FALLBACK_DATA = [{
+        // Текущее состояние
+        let currentSheetMode = 'full'; // 'full' или 'active'
+        let charts = {};
+        let RAW_DATA = [];
+
+        // Фоллбэк данные (для полного рейтинга)
+        const FALLBACK_DATA_FULL = [{
             rank: 1, delta: "", name: "ssann", m: 8, w: 8, d: 0, l: 0, gd: 28, gf: 45, ga: 17, avgGF: 5.63, avgGA: 2.13, avgPts: 3.00, elo: 2669, eloDelta: 0, eloMax: 2669
         }, {
             rank: 2, delta: "▲6", name: "SpeedyGonzales", m: 75, w: 53, d: 2, l: 20, gd: 135, gf: 373, ga: 238, avgGF: 4.97, avgGA: 3.17, avgPts: 2.15, elo: 2515, eloDelta: 255, eloMax: 2534
@@ -385,9 +394,6 @@
             rank: 36, delta: "▼1", name: "Foma67", m: 15, w: 3, d: 0, l: 12, gd: -52, gf: 27, ga: 79, avgGF: 1.80, avgGA: 5.27, avgPts: 0.60, elo: 1558, eloDelta: 0, eloMax: 2042
         }];
 
-        let charts = {};
-        let RAW_DATA = FALLBACK_DATA;
-
         // ============================================================
         // УТИЛИТЫ
         // ============================================================
@@ -418,6 +424,7 @@
 
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
             const headers = parseCSVLine(lines[0]);
             return lines.slice(1).map(line => {
                 if (!line.trim()) return null;
@@ -448,6 +455,21 @@
         // ============================================================
         // ЗАГРУЗКА ДАННЫХ
         // ============================================================
+        
+        function getCurrentSheetName() {
+            return currentSheetMode === 'full' ? CONFIG.fullSheetName : CONFIG.activeSheetName;
+        }
+
+        function getApiUrl() {
+            const sheetName = encodeURIComponent(getCurrentSheetName());
+            return `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+        }
+
+        function getCsvUrl() {
+            const sheetName = encodeURIComponent(getCurrentSheetName());
+            return `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+        }
+
         async function loadFromVisualizationAPI(url) {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`API HTTP ${response.status}`);
@@ -486,30 +508,53 @@
         }
 
         async function loadData() {
+            // Показываем лоадер
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('chartsContainer').style.display = 'none';
+
             try {
-                if (CONFIG.apiUrl && !CONFIG.apiUrl.includes('YOUR_SHEET_ID')) {
-                    RAW_DATA = await loadFromVisualizationAPI(CONFIG.apiUrl);
-                    setStatus(true, 'Google Sheets API');
-                    return;
-                }
-                if (CONFIG.csvUrl && !CONFIG.csvUrl.includes('YOUR_SHEET_ID')) {
-                    RAW_DATA = await loadFromCSV(CONFIG.csvUrl);
-                    setStatus(true, 'CSV');
+                if (CONFIG.sheetId && !CONFIG.sheetId.includes('YOUR_SHEET_ID')) {
+                    // Пробуем API
+                    RAW_DATA = await loadFromVisualizationAPI(getApiUrl());
+                    
+                    // Если API вернул пустой массив (возможно, лист пустой или нет доступа), пробуем CSV
+                    if (RAW_DATA.length === 0) {
+                         RAW_DATA = await loadFromCSV(getCsvUrl());
+                    }
+                    
+                    setStatus(true, `API: ${getCurrentSheetName()}`);
                     return;
                 }
             } catch (err) {
                 console.warn('API Error:', err);
-                if (CONFIG.useFallback) {
-                    RAW_DATA = FALLBACK_DATA;
-                    setStatus(false, 'Фоллбэк данные');
+            }
+
+            // Фоллбэк
+            if (CONFIG.useFallback) {
+                if (currentSheetMode === 'full') {
+                    RAW_DATA = FALLBACK_DATA_FULL;
+                    setStatus(false, 'Фоллбэк (Полный)');
                 } else {
-                    showError(err.message);
-                    return;
+                    // Для активного режима нет фоллбэка, если API не сработал
+                    // Можно сделать пустым или использовать часть полного
+                    RAW_DATA = [];
+                    setStatus(false, 'Нет данных (Активные)');
                 }
+            } else {
+                throw new Error('Не удалось загрузить данные');
             }
-            if (CONFIG.useFallback && CONFIG.apiUrl.includes('YOUR_SHEET_ID')) {
-                setStatus(false, 'Фоллбэк (замени YOUR_SHEET_ID)');
-            }
+        }
+
+        function switchSheetMode() {
+            const mode = document.getElementById('sheetMode').value;
+            currentSheetMode = mode;
+            loadData().then(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('chartsContainer').style.display = 'grid';
+                rebuildAll();
+            }).catch(err => {
+                showError(err.message);
+            });
         }
 
         function setStatus(online, source) {
@@ -527,15 +572,24 @@
         // ФИЛЬТРЫ И СОРТИРОВКА
         // ============================================================
         function getFiltered() {
-            const minM = parseInt(document.getElementById('minMatches').value);
             const sortMode = document.getElementById('sortMode').value;
-            let data = RAW_DATA.filter(p => p.m >= minM);
+            // Фильтр по мин. матчам убран
+            let data = [...RAW_DATA]; // Копия, чтобы не менять оригинал
+            
+            // Убираем игроков с 0 матчей из сортировок, если нужно, но обычно они остаются внизу
+            // if needed: data = data.filter(p => p.m > 0);
+
             switch (sortMode) {
                 case 'elo':
                     data.sort((a, b) => b.elo - a.elo);
                     break;
                 case 'winrate':
-                    data.sort((a, b) => (b.w / b.m) - (a.w / a.m));
+                    // Защита от деления на ноль
+                    data.sort((a, b) => {
+                        const wrA = a.m > 0 ? a.w / a.m : 0;
+                        const wrB = b.m > 0 ? b.w / b.m : 0;
+                        return wrB - wrA;
+                    });
                     break;
                 case 'avggz':
                     data.sort((a, b) => b.avgGF - a.avgGF);
@@ -580,6 +634,10 @@
         // ГРАФИКИ
         // ============================================================
         function buildSummary(data) {
+            if (!data || data.length === 0) {
+                document.getElementById('summaryStats').innerHTML = '<div class="stat-box"><div class="val">-</div><div class="lbl">Нет данных</div></div>';
+                return;
+            }
             const totalGoals = data.reduce((s, p) => s + p.gf, 0);
             const totalMatches = data.reduce((s, p) => s + p.m, 0);
             const avgElo = Math.round(data.reduce((s, p) => s + p.elo, 0) / data.length);
@@ -596,6 +654,7 @@
 
         function buildEloChart(data) {
             destroyChart('elo');
+            if(data.length === 0) return;
             charts.elo = new Chart(document.getElementById('eloChart'), {
                 type: 'bar',
                 data: {
@@ -630,6 +689,7 @@
 
         function buildEloVsMax(data) {
             destroyChart('eloVsMax');
+            if(data.length === 0) return;
             charts.eloVsMax = new Chart(document.getElementById('eloVsMaxChart'), {
                 type: 'bar',
                 data: {
@@ -680,7 +740,8 @@
 
         function buildWinrateChart(data) {
             destroyChart('winrate');
-            const wr = data.map(p => (p.w / p.m) * 100);
+            if(data.length === 0) return;
+            const wr = data.map(p => p.m > 0 ? (p.w / p.m) * 100 : 0);
             charts.winrate = new Chart(document.getElementById('winrateChart'), {
                 type: 'bar',
                 data: {
@@ -713,6 +774,7 @@
 
         function buildGoalsChart(data) {
             destroyChart('goals');
+            if(data.length === 0) return;
             charts.goals = new Chart(document.getElementById('goalsChart'), {
                 type: 'bar',
                 data: {
@@ -744,6 +806,7 @@
 
         function buildGoalDiffChart(data) {
             destroyChart('goalDiff');
+            if(data.length === 0) return;
             const sorted = [...data].sort((a, b) => b.gd - a.gd);
             charts.goalDiff = new Chart(document.getElementById('goalDiffChart'), {
                 type: 'bar',
@@ -772,6 +835,9 @@
         function buildEloDeltaChart(data) {
             destroyChart('eloDelta');
             const withDelta = data.filter(p => p.eloDelta !== 0).sort((a, b) => b.eloDelta - a.eloDelta);
+            if(withDelta.length === 0) {
+                // Если нет дельт, можно показать пустой график или сообщение, но ChartJS лучше создать пустым
+            }
             charts.eloDelta = new Chart(document.getElementById('eloDeltaChart'), {
                 type: 'bar',
                 data: {
@@ -796,6 +862,7 @@
 
         function buildScatterChart(data) {
             destroyChart('scatter');
+            if(data.length === 0) return;
             const scatterData = data.map(p => ({ x: p.avgGF, y: p.avgGA, label: p.name, elo: p.elo, m: p.m }));
             charts.scatter = new Chart(document.getElementById('scatterChart'), {
                 type: 'scatter',
@@ -840,6 +907,7 @@
 
         function buildAvgPointsChart(data) {
             destroyChart('avgPoints');
+            if(data.length === 0) return;
             charts.avgPoints = new Chart(document.getElementById('avgPointsChart'), {
                 type: 'bar',
                 data: {
@@ -864,6 +932,10 @@
 
         function buildMatchesDistChart(data) {
             destroyChart('matchesDist');
+            // Используем RAW_DATA для общего распределения, а не отфильтрованного, 
+            // чтобы статистика была по всей выборке режима
+            if(RAW_DATA.length === 0) return;
+            
             const bins = [
                 { label: '1-5', min: 1, max: 5 },
                 { label: '6-15', min: 6, max: 15 },
@@ -900,6 +972,7 @@
 
         function buildRadarChart(data) {
             destroyChart('radar');
+            if(data.length === 0) return;
             const top10 = [...data].sort((a, b) => b.elo - a.elo).slice(0, 10);
             const maxElo = Math.max(...RAW_DATA.map(p => p.elo));
             const maxAvgGF = Math.max(...RAW_DATA.map(p => p.avgGF));
@@ -908,7 +981,7 @@
                 label: p.name,
                 data: [
                     (p.elo / maxElo * 100),
-                    ((p.w / p.m) * 100),
+                    (p.m > 0 ? (p.w / p.m) * 100 : 0),
                     (p.avgGF / maxAvgGF * 100),
                     ((1 - p.avgGA / 10) * 100),
                     (p.avgPts / 3 * 100),
@@ -969,7 +1042,7 @@
             document.getElementById('chartsContainer').style.display = 'grid';
             rebuildAll();
         }).catch(err => {
-            document.getElementById('dashboard').innerHTML = `<div class="error-msg">❌ Ошибка: ${err.message}</div>`;
+            showError(err.message);
         });
     </script>
 </body>
