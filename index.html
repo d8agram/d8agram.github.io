@@ -144,6 +144,8 @@
         padding: 28px;
         border: 1px solid var(--border);
         transition: border-color 0.3s, transform 0.2s;
+        display: flex;
+        flex-direction: column;
     }
     .card:hover {
         border-color: rgba(255, 230, 101, 0.3);
@@ -162,13 +164,20 @@
         gap: 10px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        flex-shrink: 0;
     }
     .card h2 .icon {
         font-size: 1.2rem;
     }
+    .chart-wrapper {
+        position: relative;
+        width: 100%;
+        /* Высота будет задана через JS для адаптивности */
+        flex-grow: 1; 
+    }
     canvas {
+        display: block; /* Убирает отступы у canvas */
         width: 100% !important;
-        max-height: 400px;
     }
     /* Stats */
     .stat-row {
@@ -271,34 +280,64 @@
                 <div class="stat-row" id="summaryStats"></div>
             </div>
             <div class="card full-width">
-                <h2><span class="icon">⭐</span> Рейтинг Эло</h2> <canvas id="eloChart"></canvas>
+                <h2><span class="icon">⭐</span> Рейтинг Эло</h2> 
+                <div class="chart-wrapper" id="eloChartWrapper">
+                    <canvas id="eloChart"></canvas>
+                </div>
             </div>
             <div class="card full-width">
-                <h2><span class="icon">📈</span> Текущий vs Максимальный Эло</h2> <canvas id="eloVsMaxChart"></canvas>
+                <h2><span class="icon">📈</span> Текущий vs Максимальный Эло</h2> 
+                <div class="chart-wrapper" id="eloVsMaxChartWrapper">
+                    <canvas id="eloVsMaxChart"></canvas>
+                </div>
             </div>
             <div class="card">
-                <h2><span class="icon">🎯</span> Процент побед</h2> <canvas id="winrateChart"></canvas>
+                <h2><span class="icon">🎯</span> Процент побед</h2> 
+                <div class="chart-wrapper" id="winrateChartWrapper">
+                    <canvas id="winrateChart"></canvas>
+                </div>
             </div>
             <div class="card">
-                <h2><span class="icon">⚽</span> Средние голы: ГЗ vs ГП</h2> <canvas id="goalsChart"></canvas>
+                <h2><span class="icon">⚽</span> Средние голы: Забито vs Пропущено</h2> 
+                <div class="chart-wrapper" id="goalsChartWrapper">
+                    <canvas id="goalsChart"></canvas>
+                </div>
             </div>
             <div class="card">
-                <h2><span class="icon">🔄</span> Разница мячей</h2> <canvas id="goalDiffChart"></canvas>
+                <h2><span class="icon">🔄</span> Разница мячей</h2> 
+                <div class="chart-wrapper" id="goalDiffChartWrapper">
+                    <canvas id="goalDiffChart"></canvas>
+                </div>
             </div>
             <div class="card">
-                <h2><span class="icon">🔥</span> ΔЭло (изменение)</h2> <canvas id="eloDeltaChart"></canvas>
+                <h2><span class="icon">🔥</span> ΔЭло (изменение за последний турнир)</h2> 
+                <div class="chart-wrapper" id="eloDeltaChartWrapper">
+                    <canvas id="eloDeltaChart"></canvas>
+                </div>
             </div>
             <div class="card full-width">
-                <h2><span class="icon">⚔️</span> Атака vs Оборона</h2> <canvas id="scatterChart"></canvas>
+                <h2><span class="icon">⚔️</span> Атака vs Оборона</h2> 
+                <div class="chart-wrapper" id="scatterChartWrapper">
+                    <canvas id="scatterChart"></canvas>
+                </div>
             </div>
             <div class="card">
-                <h2><span class="icon">📉</span> Средние очки за матч</h2> <canvas id="avgPointsChart"></canvas>
+                <h2><span class="icon">📉</span> Средние очки за матч</h2> 
+                <div class="chart-wrapper" id="avgPointsChartWrapper">
+                    <canvas id="avgPointsChart"></canvas>
+                </div>
             </div>
             <div class="card">
-                <h2><span class="icon">🎲</span> Распределение по матчам</h2> <canvas id="matchesDistChart"></canvas>
+                <h2><span class="icon">🎲</span> Распределение по матчам</h2> 
+                <div class="chart-wrapper" id="matchesDistChartWrapper">
+                    <canvas id="matchesDistChart"></canvas>
+                </div>
             </div>
             <div class="card full-width">
-                <h2><span class="icon">🏆</span> Топ-10: Радар</h2> <canvas id="radarChart"></canvas>
+                <h2><span class="icon">🏆</span> Топ-10: Радар</h2> 
+                <div class="chart-wrapper" id="radarChartWrapper">
+                    <canvas id="radarChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -669,8 +708,13 @@
             destroyChart('elo');
             if(data.length === 0) return;
             const canvas = document.getElementById('eloChart');
-            if (!canvas) return;
-            
+            const wrapper = document.getElementById('eloChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            // Адаптивная высота: 30px на игрока, минимум 300px
+            const height = Math.max(300, data.length * 30);
+            wrapper.style.height = `${height}px`;
+
             charts.elo = new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -680,11 +724,12 @@
                         backgroundColor: data.map(p => eloColor(p.elo)),
                         borderRadius: 6,
                         borderSkipped: false,
-                        barThickness: 14,
+                        barThickness: 12, // Тоньше
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false, // Важно для адаптивной высоты
                     indexAxis: 'y',
                     plugins: {
                         legend: { display: false },
@@ -708,7 +753,12 @@
             if(data.length === 0) return;
             
             const canvas = document.getElementById('eloVsMaxChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('eloVsMaxChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            // Адаптивная высота: 30px на игрока, минимум 300px
+            const height = Math.max(300, data.length * 30);
+            wrapper.style.height = `${height}px`;
 
             // Используем группированные бары для наглядного сравнения
             charts.eloVsMax = new Chart(canvas, {
@@ -717,29 +767,30 @@
                     labels: data.map(p => p.name),
                     datasets: [
                         {
+                            label: 'Макс. Эло',
+                            data: data.map(p => p.eloMax),
+                            backgroundColor: 'rgba(255,230,101,0.2)', // Полупрозрачный фон
+                            borderColor: 'rgba(255,230,101,0.5)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barThickness: 8, // Очень тонкий
+                            order: 2 // Рисуется первым (сзади)
+                        },
+                        {
                             label: 'Текущий',
                             data: data.map(p => p.elo),
                             backgroundColor: data.map(p => eloColor(p.elo)),
                             borderRadius: 4,
                             borderSkipped: false,
-                            barThickness: 10,
-                            order: 1 // Рисуется первым (сзади)
-                        },
-                        {
-                            label: 'Макс. Эло',
-                            data: data.map(p => p.eloMax),
-                            backgroundColor: 'rgba(255,230,101,0.2)',
-                            borderColor: 'rgba(255,230,101,0.6)',
-                            borderWidth: 1,
-                            borderRadius: 4,
-                            borderSkipped: false,
-                            barThickness: 10,
-                            order: 2 // Рисуется вторым (спереди)
+                            barThickness: 8, // Совпадает с макс
+                            order: 1 // Рисуется вторым (спереди)
                         }
                     ]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     indexAxis: 'y',
                     plugins: {
                         legend: { 
@@ -772,30 +823,42 @@
 
         function buildWinrateChart(data) {
             destroyChart('winrate');
-            if(data.length === 0) return;
+            
+            // Фильтруем тех, у кого 0 побед (и минимум 1 сыгранный матч, чтобы избежать деления на ноль)
+            const activeWinners = data.filter(p => p.w > 0 && p.m > 0);
+            
+            if(activeWinners.length === 0) return;
+            
             const canvas = document.getElementById('winrateChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('winrateChartWrapper');
+            if (!canvas || !wrapper) return;
 
-            const wr = data.map(p => p.m > 0 ? (p.w / p.m) * 100 : 0);
+            // Адаптивная высота
+            const height = Math.max(300, activeWinners.length * 30);
+            wrapper.style.height = `${height}px`;
+
+            const wr = activeWinners.map(p => (p.w / p.m) * 100);
             charts.winrate = new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: data.map(p => p.name),
+                    labels: activeWinners.map(p => p.name),
                     datasets: [{
                         data: wr,
                         backgroundColor: wr.map(v => v >= 60 ? '#50fa7b' : v >= 40 ? '#ffe665' : '#ff5555'),
                         borderRadius: 4,
                         borderSkipped: false,
+                        barThickness: 12
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
-                                afterLabel: (ctx) => `В: ${data[ctx.dataIndex].w} | Н: ${data[ctx.dataIndex].d} | П: ${data[ctx.dataIndex].l}`
+                                afterLabel: (ctx) => `В: ${activeWinners[ctx.dataIndex].w} | Н: ${activeWinners[ctx.dataIndex].d} | П: ${activeWinners[ctx.dataIndex].l}`
                             }
                         }
                     },
@@ -811,28 +874,35 @@
             destroyChart('goals');
             if(data.length === 0) return;
             const canvas = document.getElementById('goalsChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('goalsChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            const height = Math.max(300, data.length * 30);
+            wrapper.style.height = `${height}px`;
 
             charts.goals = new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: data.map(p => p.name),
                     datasets: [{
-                        label: 'Ср.ГЗ',
+                        label: 'Забито (Ср.)',
                         data: data.map(p => p.avgGF),
                         backgroundColor: 'rgba(80,250,123,0.7)',
                         borderRadius: 4,
-                        borderSkipped: false
+                        borderSkipped: false,
+                        barThickness: 10
                     }, {
-                        label: 'Ср.ГП',
+                        label: 'Пропущено (Ср.)',
                         data: data.map(p => p.avgGA),
                         backgroundColor: 'rgba(255,85,85,0.7)',
                         borderRadius: 4,
-                        borderSkipped: false
+                        borderSkipped: false,
+                        barThickness: 10
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { labels: { color: '#888' } }, tooltip: TOOLTIP_CONFIG },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
@@ -846,9 +916,13 @@
             destroyChart('goalDiff');
             if(data.length === 0) return;
             const canvas = document.getElementById('goalDiffChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('goalDiffChartWrapper');
+            if (!canvas || !wrapper) return;
 
             const sorted = [...data].sort((a, b) => b.gd - a.gd);
+            const height = Math.max(300, sorted.length * 30);
+            wrapper.style.height = `${height}px`;
+
             charts.goalDiff = new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -858,11 +932,12 @@
                         backgroundColor: sorted.map(p => p.gd >= 0 ? 'rgba(80,250,123,0.7)' : 'rgba(255,85,85,0.7)'),
                         borderRadius: 4,
                         borderSkipped: false,
-                        barThickness: 14,
+                        barThickness: 12,
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     indexAxis: 'y',
                     plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: {
@@ -876,12 +951,17 @@
         function buildEloDeltaChart(data) {
             destroyChart('eloDelta');
             const canvas = document.getElementById('eloDeltaChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('eloDeltaChartWrapper');
+            if (!canvas || !wrapper) return;
 
             const withDelta = data.filter(p => p.eloDelta !== 0).sort((a, b) => b.eloDelta - a.eloDelta);
             if(withDelta.length === 0) {
                 // Если нет дельт, можно показать пустой график или сообщение, но ChartJS лучше создать пустым
             }
+            
+            const height = Math.max(300, withDelta.length * 30);
+            wrapper.style.height = `${height}px`;
+
             charts.eloDelta = new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -895,6 +975,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600 } } },
@@ -908,7 +989,11 @@
             destroyChart('scatter');
             if(data.length === 0) return;
             const canvas = document.getElementById('scatterChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('scatterChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            // Для scatter chart фиксированная высота, так как количество точек не определяет высоту оси
+            wrapper.style.height = '400px';
 
             const scatterData = data.map(p => ({ x: p.avgGF, y: p.avgGA, label: p.name, elo: p.elo, m: p.m }));
             charts.scatter = new Chart(canvas, {
@@ -925,6 +1010,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -954,23 +1040,34 @@
 
         function buildAvgPointsChart(data) {
             destroyChart('avgPoints');
-            if(data.length === 0) return;
+            
+            // Фильтруем тех, у кого 0 очков (и минимум 1 сыгранный матч)
+            const activePoints = data.filter(p => p.avgPts > 0 && p.m > 0);
+            
+            if(activePoints.length === 0) return;
+
             const canvas = document.getElementById('avgPointsChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('avgPointsChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            const height = Math.max(300, activePoints.length * 30);
+            wrapper.style.height = `${height}px`;
 
             charts.avgPoints = new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: data.map(p => p.name),
+                    labels: activePoints.map(p => p.name),
                     datasets: [{
-                        data: data.map(p => p.avgPts),
-                        backgroundColor: data.map(p => p.avgPts >= 2 ? '#50fa7b' : p.avgPts >= 1.4 ? '#ffe665' : '#ff5555'),
+                        data: activePoints.map(p => p.avgPts),
+                        backgroundColor: activePoints.map(p => p.avgPts >= 2 ? '#50fa7b' : p.avgPts >= 1.4 ? '#ffe665' : '#ff5555'),
                         borderRadius: 4,
                         borderSkipped: false,
+                        barThickness: 12
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
@@ -983,7 +1080,10 @@
         function buildMatchesDistChart(data) {
             destroyChart('matchesDist');
             const canvas = document.getElementById('matchesDistChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('matchesDistChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            wrapper.style.height = '300px';
 
             // Используем RAW_DATA для общего распределения, а не отфильтрованного, 
             // чтобы статистика была по всей выборке режима
@@ -1011,6 +1111,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'bottom',
@@ -1027,7 +1128,10 @@
             destroyChart('radar');
             if(data.length === 0) return;
             const canvas = document.getElementById('radarChart');
-            if (!canvas) return;
+            const wrapper = document.getElementById('radarChartWrapper');
+            if (!canvas || !wrapper) return;
+
+            wrapper.style.height = '400px';
 
             const top10 = [...data].sort((a, b) => b.elo - a.elo).slice(0, 10);
             const maxElo = Math.max(...RAW_DATA.map(p => p.elo));
@@ -1056,6 +1160,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'bottom',
