@@ -332,7 +332,7 @@
         // КОНФИГУРАЦИЯ
         // ============================================================
         const CONFIG = {
-            sheetId: 'YOUR_SHEET_ID',
+            sheetId: '1f9E6M_HY-_UcLlxBCb5W1NNoR73AtqAA8y0_HdKcH9U',
             fullSheetName: 'Рейтинг полный',
             activeSheetName: 'Рейтинг активных',
             useFallback: true,
@@ -722,24 +722,24 @@
                     labels: data.map(p => p.name),
                     datasets: [
                         {
-                            label: 'Макс. Эло',
-                            data: data.map(p => p.eloMax),
-                            backgroundColor: 'rgba(255,230,101,0.2)',
-                            borderColor: 'rgba(255,230,101,0.5)',
-                            borderWidth: 1,
-                            borderRadius: 3,
-                            borderSkipped: false,
-                            barThickness: 6,
-                            order: 2
-                        },
-                        {
                             label: 'Текущий',
                             data: data.map(p => p.elo),
                             backgroundColor: data.map(p => eloColor(p.elo)),
                             borderRadius: 3,
                             borderSkipped: false,
-                            barThickness: 6,
-                            order: 1
+                            barThickness: 8,
+                            stack: 'elo'
+                        },
+                        {
+                            label: 'Макс. Эло',
+                            data: data.map(p => Math.max(0, p.eloMax - p.elo)),
+                            backgroundColor: 'rgba(255,230,101,0.12)',
+                            borderColor: 'rgba(255,230,101,0.25)',
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            borderSkipped: false,
+                            barThickness: 8,
+                            stack: 'elo'
                         }
                     ]
                 },
@@ -752,17 +752,25 @@
                         tooltip: {
                             ...TOOLTIP_CONFIG,
                             callbacks: {
-                                afterLabel: (ctx) => {
+                                label: (ctx) => {
                                     const p = data[ctx.dataIndex];
-                                    const gap = p.eloMax - p.elo;
-                                    return gap > 0 ? `Потеряно: -${gap}` : 'На пике!';
+                                    if (ctx.datasetIndex === 0) return `Текущий: ${p.elo}`;
+                                    return `Макс: ${p.eloMax} (+${p.eloMax - p.elo})`;
                                 }
                             }
                         }
                     },
                     scales: {
-                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON, min: 1500 },
-                        y: { grid: { display: false }, ticks: { color: '#aaa', font: { weight: 600, size: 11 } } }
+                        x: { 
+                            stacked: true,
+                            grid: GRID_COMMON, 
+                            ticks: TICKS_COMMON, 
+                            min: 1500 
+                        },
+                        y: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#aaa', font: { weight: 600, size: 11 } } 
+                        }
                     }
                 }
             });
@@ -839,16 +847,16 @@
                         label: 'Забито (Ср.)',
                         data: data.map(p => p.avgGF),
                         backgroundColor: 'rgba(80,250,123,0.7)',
-                        borderRadius: 3,
+                        borderRadius: 2,
                         borderSkipped: false,
-                        barThickness: 8
+                        barThickness: 4
                     }, {
                         label: 'Пропущено (Ср.)',
                         data: data.map(p => p.avgGA),
                         backgroundColor: 'rgba(255,85,85,0.7)',
-                        borderRadius: 3,
+                        borderRadius: 2,
                         borderSkipped: false,
-                        barThickness: 8
+                        barThickness: 4
                     }]
                 },
                 options: {
@@ -923,8 +931,7 @@
                         data: withDelta.map(p => p.eloDelta),
                         backgroundColor: withDelta.map(p => p.eloDelta > 0 ? 'rgba(80,250,123,0.8)' : 'rgba(255,85,85,0.8)'),
                         borderRadius: 3,
-                        borderSkipped: false,
-                        barThickness: 6
+                        borderSkipped: false
                     }]
                 },
                 options: {
@@ -1029,11 +1036,11 @@
                     indexAxis: isMob ? 'y' : 'x',
                     plugins: { legend: { display: false }, tooltip: TOOLTIP_CONFIG },
                     scales: isMob ? {
-                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.2 },
+                        x: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.0 },
                         y: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
                     } : {
                         x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, font: { size: 10 } } },
-                        y: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.2 }
+                        y: { grid: GRID_COMMON, ticks: TICKS_COMMON, max: 3.0 }
                     }
                 }
             });
